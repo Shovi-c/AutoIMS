@@ -1,2 +1,2 @@
-# DBMS-credit-risk-analysis
-For the dbms project
+# AutoIMS
+For inventory and service management
