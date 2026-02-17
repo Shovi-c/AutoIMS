@@ -1,6 +1,9 @@
 from flask import Blueprint, request, jsonify
-from db import db
-from models.user import User
+from db.connection import get_db_cursor
+from models.user import (
+    create_user, get_user_by_email, get_user_by_username,
+    verify_password, user_to_dict
+)
 from utils.jwt_utils import generate_token, token_required
 
 # Create authentication blueprint
@@ -45,38 +48,37 @@ def signup():
             return jsonify({'error': 'Password must be at least 6 characters'}), 400
         
         # Check if user already exists by email
-        existing_user = User.query.filter_by(email=email.lower().strip()).first()
+        existing_user = get_user_by_email(email.lower().strip())
         if existing_user:
             return jsonify({'error': 'Email already registered'}), 409
         
         # Check if username already exists (if provided)
         if username and username.strip():
-            existing_username = User.query.filter_by(username=username.strip()).first()
+            existing_username = get_user_by_username(username.strip())
             if existing_username:
                 return jsonify({'error': 'Username already taken'}), 409
         
         # Create new user
-        new_user = User(
+        new_user = create_user(
             name=name.strip(),
             email=email.lower().strip(),
             password=password,
             username=username.strip() if username else None
         )
         
-        db.session.add(new_user)
-        db.session.commit()
+        if not new_user:
+            return jsonify({'error': 'Failed to create user'}), 500
         
         # Generate JWT token
-        token = generate_token(new_user.user_id)
+        token = generate_token(new_user['user_id'])
         
         return jsonify({
             'message': 'User registered successfully',
             'token': token,
-            'user': new_user.to_dict()
+            'user': user_to_dict(new_user)
         }), 201
         
     except Exception as e:
-        db.session.rollback()
         return jsonify({'error': f'Registration failed: {str(e)}'}), 500
 
 @auth_bp.route('/login', methods=['POST'])
@@ -111,22 +113,22 @@ def login():
             return jsonify({'error': 'Password is required'}), 400
         
         # Find user by email
-        user = User.query.filter_by(email=email.lower().strip()).first()
+        user = get_user_by_email(email.lower().strip())
         
         if not user:
             return jsonify({'error': 'Invalid email or password'}), 401
         
         # Verify password
-        if not user.check_password(password):
+        if not verify_password(password, user['password_hash']):
             return jsonify({'error': 'Invalid email or password'}), 401
         
         # Generate JWT token
-        token = generate_token(user.user_id)
+        token = generate_token(user['user_id'])
         
         return jsonify({
             'message': 'Login successful',
             'token': token,
-            'user': user.to_dict()
+            'user': user_to_dict(user)
         }), 200
         
     except Exception as e:
@@ -148,7 +150,7 @@ def get_current_user(current_user):
     try:
         return jsonify({
             'message': 'User retrieved successfully',
-            'user': current_user.to_dict()
+            'user': user_to_dict(current_user)
         }), 200
         
     except Exception as e:

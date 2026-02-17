@@ -4,7 +4,7 @@ const Footer = () => {
       <ul className="flex justify-center gap-6 text-sm text-slate-600">
         <li>
           <a href="#" className="hover:text-slate-900 transition">
-            Help 
+            Help
           </a>
         </li>
         <li>

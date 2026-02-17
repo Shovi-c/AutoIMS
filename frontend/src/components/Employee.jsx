@@ -1,116 +1,171 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
 
-// Sample data for employees (replace with actual data)
-const employees = [
-  {
-    employeeName: 'John Doe',
-    employeeId: 'EMP001',
-    position: 'Driver',
-    workingStatus: 'Working',
-    vehicleId: 'VEH001',
-    rating: 4.5,
-    jobsDone: 10,
-  },
-  {
-    employeeName: 'Jane Smith',
-    employeeId: 'EMP002',
-    position: 'Mechanic',
-    workingStatus: 'Not Working',
-    vehicleId: 'VEH002',
-    rating: 3.8,
-    jobsDone: 5,
-  },
-  {
-    employeeName: 'Sam Brown',
-    employeeId: 'EMP003',
-    position: 'Technician',
-    workingStatus: 'Working',
-    vehicleId: 'VEH003',
-    rating: 4.0,
-    jobsDone: 8,
-  },
-  {
-    employeeName: 'Lucy Lee',
-    employeeId: 'EMP004',
-    position: 'Cleaner',
-    workingStatus: 'Not Working',
-    vehicleId: 'VEH004',
-    rating: 4.2,
-    jobsDone: 7,
-  },
-  {
-    employeeName: 'Mike Johnson',
-    employeeId: 'EMP005',
-    position: 'Manager',
-    workingStatus: 'Working',
-    vehicleId: 'VEH005',
-    rating: 4.8,
-    jobsDone: 12,
-  },
-];
+const API_BASE = "http://localhost:5000/api";
+
+// Helper to get auth token from localStorage
+const getAuthToken = () => localStorage.getItem("token");
+
+// Helper function to map backend employee to frontend format
+const mapEmployeeFromBackend = (emp) => ({
+  employeeName: emp.name,
+  employeeId: emp.id,
+  position: emp.position,
+  workingStatus: emp.working_status || "Working",
+  vehicleId: "",
+  rating: parseFloat(emp.rating) || 0,
+  jobsDone: parseInt(emp.jobs_done) || 0,
+  phone: emp.phone || "",
+  email: emp.email || "",
+  salary: parseFloat(emp.salary) || 0,
+});
 
 const Employee = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [employeeList, setEmployeeList] = useState(employees);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [employeeList, setEmployeeList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // A canonical list of vehicle IDs for suggestions / validation.
   // In a real app this should come from the backend.
-  const vehicleList = Array.from(new Set([...employees.map((e) => e.vehicleId), 'VEH006', 'VEH007']));
+  const vehicleList = [
+    "VEH001",
+    "VEH002",
+    "VEH003",
+    "VEH004",
+    "VEH005",
+    "VEH006",
+    "VEH007",
+  ];
 
   // Edit state
   const [editEmployeeId, setEditEmployeeId] = useState(null);
-  const [editStatus, setEditStatus] = useState('');
-  const [editVehicleId, setEditVehicleId] = useState('');
-  const [vehicleError, setVehicleError] = useState('');
+  const [editStatus, setEditStatus] = useState("");
+  const [editVehicleId, setEditVehicleId] = useState("");
+  const [vehicleError, setVehicleError] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
 
   const [showAddPopup, setShowAddPopup] = useState(false);
   const [newEmployee, setNewEmployee] = useState({
-    employeeName: '',
-    employeeId: '',
-    phone: '',
-    email: '',
-    position: '',
-    designation: '',
-    workingStatus: 'Working',
-    vehicleId: '',
-    rating: '',
-    jobsDone: '',
+    employeeName: "",
+    employeeId: "",
+    phone: "",
+    email: "",
+    position: "",
+    designation: "",
+    workingStatus: "Working",
+    vehicleId: "",
+    rating: "",
+    jobsDone: "",
   });
 
   const [showEditPopup, setShowEditPopup] = useState(false);
   const [editEmployeeData, setEditEmployeeData] = useState(null);
 
+  // Fetch employees from API on component mount
+  useEffect(() => {
+    fetchEmployees();
+  }, []);
+
+  const fetchEmployees = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(
+        `${API_BASE}/employees?include_inactive=true`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      if (!response.ok) {
+        // Still allow UI to work even if fetch fails
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          errorData.error || `HTTP error! status: ${response.status}`,
+        );
+      }
+
+      const data = await response.json();
+      const employees = data.employees || [];
+      const mappedEmployees = employees.map(mapEmployeeFromBackend);
+      setEmployeeList(mappedEmployees);
+      setError(null);
+    } catch (err) {
+      console.error("Failed to fetch employees:", err);
+      setError(
+        "Failed to load employees. Please check if the backend is running.",
+      );
+      // Keep the current list (could be empty) so UI still works
+      setEmployeeList([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleAddEmployee = () => setShowAddPopup(true);
   const handleAddPopupClose = () => {
     setShowAddPopup(false);
     setNewEmployee({
-      employeeName: '', employeeId: '', phone: '', email: '', position: '', designation: '', workingStatus: 'Working', vehicleId: '', rating: '', jobsDone: '',
+      employeeName: "",
+      employeeId: "",
+      phone: "",
+      email: "",
+      position: "",
+      designation: "",
+      workingStatus: "Working",
+      vehicleId: "",
+      rating: "",
+      jobsDone: "",
     });
   };
   const handleNewEmployeeChange = (e) => {
     const { name, value } = e.target;
     setNewEmployee((prev) => ({ ...prev, [name]: value }));
   };
-  const handleAddPopupSubmit = (e) => {
+
+  const handleAddPopupSubmit = async (e) => {
     e.preventDefault();
-    if (!newEmployee.employeeName || !newEmployee.employeeId || !newEmployee.phone || !newEmployee.email || !newEmployee.position) return;
-    setEmployeeList([
-      ...employeeList,
-      {
-        employeeName: newEmployee.employeeName,
-        employeeId: newEmployee.employeeId,
-        position: newEmployee.position,
-        designation: newEmployee.designation,
-        workingStatus: newEmployee.workingStatus,
-        vehicleId: newEmployee.vehicleId,
-        rating: parseFloat(newEmployee.rating) || 0,
-        jobsDone: parseInt(newEmployee.jobsDone) || 0,
-        phone: newEmployee.phone,
-        email: newEmployee.email,
-      },
-    ]);
-    handleAddPopupClose();
+    if (
+      !newEmployee.employeeName ||
+      !newEmployee.phone ||
+      !newEmployee.email ||
+      !newEmployee.position
+    )
+      return;
+
+    try {
+      const response = await fetch(`${API_BASE}/employees`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: newEmployee.employeeName,
+          position: newEmployee.position,
+          salary: 0,
+          phone: newEmployee.phone,
+          email: newEmployee.email,
+          workingStatus: newEmployee.workingStatus,
+          rating: parseFloat(newEmployee.rating) || 0,
+          jobsDone: parseInt(newEmployee.jobsDone) || 0,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to create employee");
+      }
+
+      const data = await response.json();
+      const newEmp = mapEmployeeFromBackend(data.employee);
+      setEmployeeList([newEmp, ...employeeList]);
+      handleAddPopupClose();
+    } catch (err) {
+      console.error("Failed to create employee:", err);
+      alert(err.message);
+    }
   };
 
   const handleSearch = (e) => {
@@ -121,8 +176,12 @@ const Employee = () => {
     // kept for quick toggling if needed elsewhere
     const updatedEmployees = employeeList.map((employee) =>
       employee.employeeId === employeeId
-        ? { ...employee, workingStatus: employee.workingStatus === 'Working' ? 'Not Working' : 'Working' }
-        : employee
+        ? {
+            ...employee,
+            workingStatus:
+              employee.workingStatus === "Working" ? "Not Working" : "Working",
+          }
+        : employee,
     );
     setEmployeeList(updatedEmployees);
   };
@@ -130,35 +189,40 @@ const Employee = () => {
   const openEdit = (employee) => {
     setEditEmployeeId(employee.employeeId);
     setEditStatus(employee.workingStatus);
-    setEditVehicleId(employee.vehicleId || '');
-    setVehicleError('');
+    setEditVehicleId(employee.vehicleId || "");
+    setVehicleError("");
     setShowSuggestions(false);
   };
 
   const handleVehicleInputChange = (value) => {
     setEditVehicleId(value);
-    setVehicleError('');
+    setVehicleError("");
     setShowSuggestions(true);
   };
 
   const handleSelectSuggestion = (vehicleId) => {
     setEditVehicleId(vehicleId);
     setShowSuggestions(false);
-    setVehicleError('');
+    setVehicleError("");
   };
 
   const handleSaveEdit = (employeeId) => {
     // Allow multiple vehicle IDs, comma separated, and validate each
-    const vehicleIds = editVehicleId.split(',').map(v => v.trim()).filter(Boolean);
-    const invalid = vehicleIds.find(v => v && !vehicleList.includes(v));
+    const vehicleIds = editVehicleId
+      .split(",")
+      .map((v) => v.trim())
+      .filter(Boolean);
+    const invalid = vehicleIds.find((v) => v && !vehicleList.includes(v));
     if (invalid) {
-      setVehicleError(`Vehicle ID '${invalid}' not found. Please choose valid vehicles.`);
+      setVehicleError(
+        `Vehicle ID '${invalid}' not found. Please choose valid vehicles.`,
+      );
       return;
     }
     const updatedEmployees = employeeList.map((employee) =>
       employee.employeeId === employeeId
         ? { ...employee, workingStatus: editStatus, vehicleId: editVehicleId }
-        : employee
+        : employee,
     );
     setEmployeeList(updatedEmployees);
     setEditEmployeeId(null);
@@ -167,15 +231,38 @@ const Employee = () => {
 
   const handleCancelEdit = () => {
     setEditEmployeeId(null);
-    setVehicleError('');
+    setVehicleError("");
     setShowSuggestions(false);
   };
 
-  const handleDeleteEmployee = (employeeId) => {
-    const employee = employeeList.find(emp => emp.employeeId === employeeId);
+  const handleDeleteEmployee = async (employeeId) => {
+    const employee = employeeList.find((emp) => emp.employeeId === employeeId);
     if (!employee) return;
-    if (window.confirm(`Are you sure you want to delete employee '${employee.employeeName}' (ID: ${employee.employeeId})? This action cannot be undone.`)) {
-      setEmployeeList(employeeList.filter(emp => emp.employeeId !== employeeId));
+    if (
+      window.confirm(
+        `Are you sure you want to delete employee '${employee.employeeName}' (ID: ${employee.employeeId})? This action cannot be undone.`,
+      )
+    ) {
+      try {
+        const response = await fetch(`${API_BASE}/employees/${employeeId}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Failed to delete employee");
+        }
+
+        setEmployeeList(
+          employeeList.filter((emp) => emp.employeeId !== employeeId),
+        );
+      } catch (err) {
+        console.error("Failed to delete employee:", err);
+        alert(err.message);
+      }
     }
   };
 
@@ -191,32 +278,88 @@ const Employee = () => {
     const { name, value } = e.target;
     setEditEmployeeData((prev) => ({ ...prev, [name]: value }));
   };
-  const handleEditPopupSubmit = (e) => {
+
+  const handleEditPopupSubmit = async (e) => {
     e.preventDefault();
-    setEmployeeList(employeeList.map(emp =>
-      emp.employeeId === editEmployeeData.employeeId ? {
-        ...emp,
-        ...editEmployeeData,
-        rating: parseFloat(editEmployeeData.rating) || 0,
-        jobsDone: parseInt(editEmployeeData.jobsDone) || 0,
-      } : emp
-    ));
-    handleEditPopupClose();
+    try {
+      const response = await fetch(
+        `${API_BASE}/employees/${editEmployeeData.employeeId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: editEmployeeData.employeeName,
+            position: editEmployeeData.position,
+            phone: editEmployeeData.phone,
+            email: editEmployeeData.email,
+            workingStatus: editEmployeeData.workingStatus,
+            rating: parseFloat(editEmployeeData.rating) || 0,
+            jobsDone: parseInt(editEmployeeData.jobsDone) || 0,
+          }),
+        },
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to update employee");
+      }
+
+      const data = await response.json();
+      const updatedEmp = mapEmployeeFromBackend(data.employee);
+
+      setEmployeeList(
+        employeeList.map((emp) =>
+          emp.employeeId === editEmployeeData.employeeId ? updatedEmp : emp,
+        ),
+      );
+      handleEditPopupClose();
+    } catch (err) {
+      console.error("Failed to update employee:", err);
+      alert(err.message);
+    }
   };
 
-  const filteredEmployees = employeeList.filter((employee) =>
-    employee.employeeName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    employee.employeeId.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredEmployees = employeeList.filter(
+    (employee) =>
+      employee.employeeName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      String(employee.employeeId)
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()),
   );
 
   // Compute ranked employees for sidebar
   const rankedEmployees = [...employeeList].sort((a, b) => b.rating - a.rating);
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-lg text-gray-600">Loading employees...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex">
       {/* Main content */}
       <div className="flex-1 p-5">
-        <h1 className="text-4xl font-extrabold text-indigo-700 mb-5">Employee </h1>
+        <h1 className="text-4xl font-extrabold text-indigo-700 mb-5">
+          Employee{" "}
+        </h1>
+
+        {/* Error message if any */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4 flex items-center justify-between">
+            <span>{error}</span>
+            <button
+              onClick={fetchEmployees}
+              className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm"
+            >
+              Retry
+            </button>
+          </div>
+        )}
 
         {/* Search Bar */}
         <div className="flex justify-between items-center mb-6">
@@ -232,7 +375,9 @@ const Employee = () => {
             onClick={handleAddEmployee}
           >
             <span className="block text-purple-600 text-lg mb-1">➕</span>
-            <span className="text-sm font-medium text-purple-700">Add Employee</span>
+            <span className="text-sm font-medium text-purple-700">
+              Add Employee
+            </span>
           </button>
         </div>
 
@@ -251,14 +396,19 @@ const Employee = () => {
           </thead>
           <tbody>
             {filteredEmployees.map((employee) => (
-              <tr key={employee.employeeId} className="border-t border-gray-300">
+              <tr
+                key={employee.employeeId}
+                className="border-t border-gray-300"
+              >
                 <td className="p-3">{employee.employeeName}</td>
                 <td className="p-3">{employee.employeeId}</td>
                 <td className="p-3">{employee.position}</td>
                 <td className="p-3">
                   <span
                     className={`px-2 py-1 rounded-full ${
-                      employee.workingStatus === 'Working' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                      employee.workingStatus === "Working"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-red-100 text-red-700"
                     }`}
                   >
                     {employee.workingStatus}
@@ -266,12 +416,15 @@ const Employee = () => {
                 </td>
                 <td className="p-3">
                   {employee.vehicleId
-                    ? employee.vehicleId.split(',').map((v, i) => (
-                        <span key={i} className="inline-block bg-gray-100 text-gray-700 rounded px-2 py-0.5 mr-1 mb-1 text-xs font-medium">
+                    ? employee.vehicleId.split(",").map((v, i) => (
+                        <span
+                          key={i}
+                          className="inline-block bg-gray-100 text-gray-700 rounded px-2 py-0.5 mr-1 mb-1 text-xs font-medium"
+                        >
                           {v.trim()}
                         </span>
                       ))
-                    : ''}
+                    : ""}
                 </td>
                 <td className="p-3">{employee.rating}</td>
                 <td className="p-3 text-center flex gap-2 justify-center">
@@ -296,14 +449,25 @@ const Employee = () => {
       {/* Sidebar: Ranked Employees */}
       <div className="w-80 bg-white border-l border-gray-200 p-4 h-screen self-start overflow-y-auto mt-46">
         {/* Removed total jobs done box */}
-        <h2 className="text-2xl font-bold text-indigo-600 mb-4">Top Ranked Employees</h2>
+        <h2 className="text-2xl font-bold text-indigo-600 mb-4">
+          Top Ranked Employees
+        </h2>
         <ol className="space-y-3">
           {rankedEmployees.map((emp, idx) => (
-            <li key={emp.employeeId} className="flex items-center bg-white rounded-lg shadow p-3">
-              <span className="text-lg font-semibold text-gray-800 mr-2">#{idx + 1}</span>
+            <li
+              key={emp.employeeId}
+              className="flex items-center bg-white rounded-lg shadow p-3"
+            >
+              <span className="text-lg font-semibold text-gray-800 mr-2">
+                #{idx + 1}
+              </span>
               <div className="flex-1">
-                <div className="font-medium text-indigo-700">{emp.employeeName}</div>
-                <div className="text-sm text-gray-500">{emp.position} | ID: {emp.employeeId}</div>
+                <div className="font-medium text-indigo-700">
+                  {emp.employeeName}
+                </div>
+                <div className="text-sm text-gray-500">
+                  {emp.position} | ID: {emp.employeeId}
+                </div>
                 <div className="mt-2">
                   <span className="block px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-semibold mb-1">
                     {emp.jobsDone} jobs
@@ -335,55 +499,126 @@ const Employee = () => {
             </div>
             <div className="flex flex-col sm:flex-row gap-4 w-full">
               <div className="flex-1">
-                <label className="mb-1 font-medium block">Name <span className="text-red-500">*</span></label>
-                <input name="employeeName" value={newEmployee.employeeName} onChange={handleNewEmployeeChange} required className="p-2 border border-gray-300 rounded-xl w-full" />
+                <label className="mb-1 font-medium block">
+                  Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="employeeName"
+                  value={newEmployee.employeeName}
+                  onChange={handleNewEmployeeChange}
+                  required
+                  className="p-2 border border-gray-300 rounded-xl w-full"
+                />
               </div>
               <div className="flex-1">
-                <label className="mb-1 font-medium block">Employee ID <span className="text-red-500">*</span></label>
-                <input name="employeeId" value={newEmployee.employeeId} onChange={handleNewEmployeeChange} required className="p-2 border border-gray-300 rounded-xl w-full" />
+                <label className="mb-1 font-medium block">
+                  Employee ID <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="employeeId"
+                  value={newEmployee.employeeId}
+                  onChange={handleNewEmployeeChange}
+                  required
+                  className="p-2 border border-gray-300 rounded-xl w-full"
+                />
               </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-4 w-full">
               <div className="flex-1">
-                <label className="mb-1 font-medium block">Phone <span className="text-red-500">*</span></label>
-                <input name="phone" value={newEmployee.phone} onChange={handleNewEmployeeChange} required className="p-2 border border-gray-300 rounded-xl w-full" />
+                <label className="mb-1 font-medium block">
+                  Phone <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="phone"
+                  value={newEmployee.phone}
+                  onChange={handleNewEmployeeChange}
+                  required
+                  className="p-2 border border-gray-300 rounded-xl w-full"
+                />
               </div>
               <div className="flex-1">
-                <label className="mb-1 font-medium block">Email <span className="text-red-500">*</span></label>
-                <input name="email" type="email" value={newEmployee.email} onChange={handleNewEmployeeChange} required className="p-2 border border-gray-300 rounded-xl w-full" />
+                <label className="mb-1 font-medium block">
+                  Email <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="email"
+                  type="email"
+                  value={newEmployee.email}
+                  onChange={handleNewEmployeeChange}
+                  required
+                  className="p-2 border border-gray-300 rounded-xl w-full"
+                />
               </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-4 w-full">
               <div className="flex-1">
-                <label className="mb-1 font-medium block">Job Title <span className="text-red-500">*</span></label>
-                <input name="position" value={newEmployee.position} onChange={handleNewEmployeeChange} required className="p-2 border border-gray-300 rounded-xl w-full" />
+                <label className="mb-1 font-medium block">
+                  Job Title <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="position"
+                  value={newEmployee.position}
+                  onChange={handleNewEmployeeChange}
+                  required
+                  className="p-2 border border-gray-300 rounded-xl w-full"
+                />
               </div>
               <div className="flex-1">
                 <label className="mb-1 font-medium block">Designation</label>
-                <input name="designation" value={newEmployee.designation} onChange={handleNewEmployeeChange} className="p-2 border border-gray-300 rounded-xl w-full" />
+                <input
+                  name="designation"
+                  value={newEmployee.designation}
+                  onChange={handleNewEmployeeChange}
+                  className="p-2 border border-gray-300 rounded-xl w-full"
+                />
               </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-4 w-full">
               <div className="flex-1">
                 <label className="mb-1 font-medium block">Working Status</label>
-                <select name="workingStatus" value={newEmployee.workingStatus} onChange={handleNewEmployeeChange} className="p-2 border border-gray-300 rounded-xl w-full">
+                <select
+                  name="workingStatus"
+                  value={newEmployee.workingStatus}
+                  onChange={handleNewEmployeeChange}
+                  className="p-2 border border-gray-300 rounded-xl w-full"
+                >
                   <option value="Working">Working</option>
                   <option value="Not Working">Not Working</option>
                 </select>
               </div>
               <div className="flex-1">
-                <label className="mb-1 font-medium block">Vehicle IDs (comma separated)</label>
-                <input name="vehicleId" value={newEmployee.vehicleId} onChange={handleNewEmployeeChange} className="p-2 border border-gray-300 rounded-xl w-full" />
+                <label className="mb-1 font-medium block">
+                  Vehicle IDs (comma separated)
+                </label>
+                <input
+                  name="vehicleId"
+                  value={newEmployee.vehicleId}
+                  onChange={handleNewEmployeeChange}
+                  className="p-2 border border-gray-300 rounded-xl w-full"
+                />
               </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-4 w-full">
               <div className="flex-1">
                 <label className="mb-1 font-medium block">Rating</label>
-                <input name="rating" type="number" step="0.1" value={newEmployee.rating} onChange={handleNewEmployeeChange} className="p-2 border border-gray-300 rounded-xl w-full" />
+                <input
+                  name="rating"
+                  type="number"
+                  step="0.1"
+                  value={newEmployee.rating}
+                  onChange={handleNewEmployeeChange}
+                  className="p-2 border border-gray-300 rounded-xl w-full"
+                />
               </div>
               <div className="flex-1">
                 <label className="mb-1 font-medium block">Jobs Done</label>
-                <input name="jobsDone" type="number" value={newEmployee.jobsDone} onChange={handleNewEmployeeChange} className="p-2 border border-gray-300 rounded-xl w-full" />
+                <input
+                  name="jobsDone"
+                  type="number"
+                  value={newEmployee.jobsDone}
+                  onChange={handleNewEmployeeChange}
+                  className="p-2 border border-gray-300 rounded-xl w-full"
+                />
               </div>
             </div>
             <button
@@ -413,55 +648,127 @@ const Employee = () => {
             </div>
             <div className="flex flex-col sm:flex-row gap-4 w-full">
               <div className="flex-1">
-                <label className="mb-1 font-medium block">Name <span className="text-red-500">*</span></label>
-                <input name="employeeName" value={editEmployeeData.employeeName} onChange={handleEditEmployeeChange} required className="p-2 border border-gray-300 rounded-xl w-full" />
+                <label className="mb-1 font-medium block">
+                  Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="employeeName"
+                  value={editEmployeeData.employeeName}
+                  onChange={handleEditEmployeeChange}
+                  required
+                  className="p-2 border border-gray-300 rounded-xl w-full"
+                />
               </div>
               <div className="flex-1">
-                <label className="mb-1 font-medium block">Employee ID <span className="text-red-500">*</span></label>
-                <input name="employeeId" value={editEmployeeData.employeeId} onChange={handleEditEmployeeChange} required className="p-2 border border-gray-300 rounded-xl w-full" disabled />
+                <label className="mb-1 font-medium block">
+                  Employee ID <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="employeeId"
+                  value={editEmployeeData.employeeId}
+                  onChange={handleEditEmployeeChange}
+                  required
+                  className="p-2 border border-gray-300 rounded-xl w-full"
+                  disabled
+                />
               </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-4 w-full">
               <div className="flex-1">
-                <label className="mb-1 font-medium block">Phone <span className="text-red-500">*</span></label>
-                <input name="phone" value={editEmployeeData.phone || ''} onChange={handleEditEmployeeChange} required className="p-2 border border-gray-300 rounded-xl w-full" />
+                <label className="mb-1 font-medium block">
+                  Phone <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="phone"
+                  value={editEmployeeData.phone || ""}
+                  onChange={handleEditEmployeeChange}
+                  required
+                  className="p-2 border border-gray-300 rounded-xl w-full"
+                />
               </div>
               <div className="flex-1">
-                <label className="mb-1 font-medium block">Email <span className="text-red-500">*</span></label>
-                <input name="email" type="email" value={editEmployeeData.email || ''} onChange={handleEditEmployeeChange} required className="p-2 border border-gray-300 rounded-xl w-full" />
+                <label className="mb-1 font-medium block">
+                  Email <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="email"
+                  type="email"
+                  value={editEmployeeData.email || ""}
+                  onChange={handleEditEmployeeChange}
+                  required
+                  className="p-2 border border-gray-300 rounded-xl w-full"
+                />
               </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-4 w-full">
               <div className="flex-1">
-                <label className="mb-1 font-medium block">Job Title <span className="text-red-500">*</span></label>
-                <input name="position" value={editEmployeeData.position || ''} onChange={handleEditEmployeeChange} required className="p-2 border border-gray-300 rounded-xl w-full" />
+                <label className="mb-1 font-medium block">
+                  Job Title <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="position"
+                  value={editEmployeeData.position || ""}
+                  onChange={handleEditEmployeeChange}
+                  required
+                  className="p-2 border border-gray-300 rounded-xl w-full"
+                />
               </div>
               <div className="flex-1">
                 <label className="mb-1 font-medium block">Designation</label>
-                <input name="designation" value={editEmployeeData.designation || ''} onChange={handleEditEmployeeChange} className="p-2 border border-gray-300 rounded-xl w-full" />
+                <input
+                  name="designation"
+                  value={editEmployeeData.designation || ""}
+                  onChange={handleEditEmployeeChange}
+                  className="p-2 border border-gray-300 rounded-xl w-full"
+                />
               </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-4 w-full">
               <div className="flex-1">
                 <label className="mb-1 font-medium block">Working Status</label>
-                <select name="workingStatus" value={editEmployeeData.workingStatus} onChange={handleEditEmployeeChange} className="p-2 border border-gray-300 rounded-xl w-full">
+                <select
+                  name="workingStatus"
+                  value={editEmployeeData.workingStatus}
+                  onChange={handleEditEmployeeChange}
+                  className="p-2 border border-gray-300 rounded-xl w-full"
+                >
                   <option value="Working">Working</option>
                   <option value="Not Working">Not Working</option>
                 </select>
               </div>
               <div className="flex-1">
-                <label className="mb-1 font-medium block">Vehicle IDs (comma separated)</label>
-                <input name="vehicleId" value={editEmployeeData.vehicleId || ''} onChange={handleEditEmployeeChange} className="p-2 border border-gray-300 rounded-xl w-full" />
+                <label className="mb-1 font-medium block">
+                  Vehicle IDs (comma separated)
+                </label>
+                <input
+                  name="vehicleId"
+                  value={editEmployeeData.vehicleId || ""}
+                  onChange={handleEditEmployeeChange}
+                  className="p-2 border border-gray-300 rounded-xl w-full"
+                />
               </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-4 w-full">
               <div className="flex-1">
                 <label className="mb-1 font-medium block">Rating</label>
-                <input name="rating" type="number" step="0.1" value={editEmployeeData.rating} onChange={handleEditEmployeeChange} className="p-2 border border-gray-300 rounded-xl w-full" />
+                <input
+                  name="rating"
+                  type="number"
+                  step="0.1"
+                  value={editEmployeeData.rating}
+                  onChange={handleEditEmployeeChange}
+                  className="p-2 border border-gray-300 rounded-xl w-full"
+                />
               </div>
               <div className="flex-1">
                 <label className="mb-1 font-medium block">Jobs Done</label>
-                <input name="jobsDone" type="number" value={editEmployeeData.jobsDone} onChange={handleEditEmployeeChange} className="p-2 border border-gray-300 rounded-xl w-full" />
+                <input
+                  name="jobsDone"
+                  type="number"
+                  value={editEmployeeData.jobsDone}
+                  onChange={handleEditEmployeeChange}
+                  className="p-2 border border-gray-300 rounded-xl w-full"
+                />
               </div>
             </div>
             <button

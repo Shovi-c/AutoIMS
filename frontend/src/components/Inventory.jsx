@@ -1,59 +1,57 @@
-import React, { useState } from 'react';
-
+import React, { useState } from "react";
 
 const inventoryItems = [
   {
-    itemName: 'Engine Cylinder',
-    itemModel: 'EC2022',
+    itemName: "Engine Cylinder",
+    itemModel: "EC2022",
     price: 15000,
-    quantity: 30,  // Number of items
-    quantityLabel: 'pcs',  // Unit of measurement (pcs)
-    image: '/image1.png',
-    description: 'High-quality engine cylinder for 2022 models',
-    brand: 'EnginePro',
+    quantity: 30, // Number of items
+    quantityLabel: "pcs", // Unit of measurement (pcs)
+    image: "/image1.png",
+    description: "High-quality engine cylinder for 2022 models",
+    brand: "EnginePro",
   },
   {
-    itemName: 'Brake Pads',
-    itemModel: 'BP1999',
+    itemName: "Brake Pads",
+    itemModel: "BP1999",
     price: 3500,
-    quantity: 3,  // Number of items
-    quantityLabel: 'sets',  // Unit of measurement (sets)
-    image: '/image2.png',
-    description: 'Durable brake pads for various vehicles',
-    brand: 'BrakeMaster',
+    quantity: 3, // Number of items
+    quantityLabel: "sets", // Unit of measurement (sets)
+    image: "/image2.png",
+    description: "Durable brake pads for various vehicles",
+    brand: "BrakeMaster",
   },
   {
-    itemName: 'Alloy Wheels',
-    itemModel: 'AW2020',
+    itemName: "Alloy Wheels",
+    itemModel: "AW2020",
     price: 25000,
-    quantity: 20,  // Number of items
-    quantityLabel: 'wheels',  // Unit of measurement (wheels)
-    image: '/image3.png',
-    description: 'Stylish alloy wheels for luxury vehicles',
-    brand: 'WheelX',
+    quantity: 20, // Number of items
+    quantityLabel: "wheels", // Unit of measurement (wheels)
+    image: "/image3.png",
+    description: "Stylish alloy wheels for luxury vehicles",
+    brand: "WheelX",
   },
   {
-    itemName: 'Headlights',
-    itemModel: 'HL2021',
+    itemName: "Headlights",
+    itemModel: "HL2021",
     price: 12000,
-    quantity: 40,  // Number of items
-    quantityLabel: 'pcs',  // Unit of measurement (pcs)
-    image: '/image4.png',
-    description: 'LED headlights for improved visibility',
-    brand: 'LightTech',
+    quantity: 40, // Number of items
+    quantityLabel: "pcs", // Unit of measurement (pcs)
+    image: "/image4.png",
+    description: "LED headlights for improved visibility",
+    brand: "LightTech",
   },
   {
-    itemName: 'Tires Set',
-    itemModel: 'TS2022',
+    itemName: "Tires Set",
+    itemModel: "TS2022",
     price: 5000,
-    quantity: 9,  // Number of items
-    quantityLabel: 'sets',  // Unit of measurement (sets)
-    image: '/image5.png',
-    description: 'All-weather tire set for 2022 models',
-    brand: 'TireCo',
-  }
+    quantity: 9, // Number of items
+    quantityLabel: "sets", // Unit of measurement (sets)
+    image: "/image5.png",
+    description: "All-weather tire set for 2022 models",
+    brand: "TireCo",
+  },
 ];
-
 
 const Inventory = () => {
   const [showPopup, setShowPopup] = useState(false);
@@ -62,14 +60,14 @@ const Inventory = () => {
   const [showChoicePopup, setShowChoicePopup] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [editItemData, setEditItemData] = useState(null);
-  const [customerId, setCustomerId] = useState('');
-  const [vehicleId, setVehicleId] = useState('');
-  const [ItemQuantity, setItemQuantity] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [customerId, setCustomerId] = useState("");
+  const [vehicleId, setVehicleId] = useState("");
+  const [ItemQuantity, setItemQuantity] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const [itemList, setItemList] = useState(inventoryItems);
 
   const handleClick = (itemModel) => {
-    const item = itemList.find(item => item.itemModel === itemModel);
+    const item = itemList.find((item) => item.itemModel === itemModel);
     setSelectedItem(item);
     setEditItemData(item);
     setShowChoicePopup(true);
@@ -93,9 +91,9 @@ const Inventory = () => {
     e.preventDefault();
     if (!customerId.trim() || !vehicleId.trim() || !ItemQuantity.trim()) return;
     setShowPopup(false);
-    setCustomerId('');
-    setVehicleId('');
-    setItemQuantity('');
+    setCustomerId("");
+    setVehicleId("");
+    setItemQuantity("");
   };
 
   const handleAddPopupSubmit = (e) => {
@@ -109,7 +107,16 @@ const Inventory = () => {
     const quantityLabel = form.quantitylabel.value.trim();
     const description = form.description.value.trim();
     const image = form.ItemImage.files[0];
-    if (!itemName || !itemModel || !brand || !price || !quantity || !quantityLabel || !image) return;
+    if (
+      !itemName ||
+      !itemModel ||
+      !brand ||
+      !price ||
+      !quantity ||
+      !quantityLabel ||
+      !image
+    )
+      return;
     setItemList([
       ...itemList,
       {
@@ -136,26 +143,48 @@ const Inventory = () => {
     const quantity = form.Quantity.value.trim();
     const quantityLabel = form.quantitylabel.value.trim();
     const description = form.description.value.trim();
-    if (!itemName || !itemModel || !brand || !price || !quantity || !quantityLabel) return;
-    setItemList(itemList.map(item =>
-      item.itemModel === editItemData.itemModel
-        ? { ...item, itemName, itemModel, brand, price: parseFloat(price), quantity: parseInt(quantity), quantityLabel, description }
-        : item
-    ));
+    if (
+      !itemName ||
+      !itemModel ||
+      !brand ||
+      !price ||
+      !quantity ||
+      !quantityLabel
+    )
+      return;
+    setItemList(
+      itemList.map((item) =>
+        item.itemModel === editItemData.itemModel
+          ? {
+              ...item,
+              itemName,
+              itemModel,
+              brand,
+              price: parseFloat(price),
+              quantity: parseInt(quantity),
+              quantityLabel,
+              description,
+            }
+          : item,
+      ),
+    );
     setShowNewEditPopup(false);
     setEditItemData(null);
   };
 
   // Filter inventoryItems based on searchTerm
-  const filteredItems = itemList.filter((item) =>
-    item.itemName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.itemModel.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredItems = itemList.filter(
+    (item) =>
+      item.itemName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.itemModel.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   return (
     <>
       <div className="p-5">
-        <h1 className="text-4xl font-extrabold text-indigo-700 mb-5">Inventory</h1>
+        <h1 className="text-4xl font-extrabold text-indigo-700 mb-5">
+          Inventory
+        </h1>
 
         {/* Flex container for Search and Add Item */}
         <div className="flex justify-between items-center mb-6">
@@ -172,9 +201,12 @@ const Inventory = () => {
           <div>
             <button
               className="p-3 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors text-center ml-6"
-              onClick={() => handleAddItem()}>
+              onClick={() => handleAddItem()}
+            >
               <span className="block text-purple-600 text-lg mb-1">📦</span>
-              <span className="text-sm font-medium text-purple-700">Add Item</span>
+              <span className="text-sm font-medium text-purple-700">
+                Add Item
+              </span>
             </button>
           </div>
         </div>
@@ -182,18 +214,26 @@ const Inventory = () => {
         {/* Inventory Items */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredItems.map((item) => (
-            <div key={item.itemModel} className="bg-white p-4 border border-stone-400 rounded-lg shadow-md hover:shadow-xl hover:scale-101"
-              onClick={() => handleClick(item.itemModel)}>
-              <img src={item.image} alt={item.itemName} className="w-90 h-40 object-cover rounded-md mb-4" />
+            <div
+              key={item.itemModel}
+              className="bg-white p-4 border border-stone-400 rounded-lg shadow-md hover:shadow-xl hover:scale-101"
+              onClick={() => handleClick(item.itemModel)}
+            >
+              <img
+                src={item.image}
+                alt={item.itemName}
+                className="w-90 h-40 object-cover rounded-md mb-4"
+              />
               <div className="flex justify-between items-center">
                 <div>
                   <h3 className="text-lg font-semibold">{item.itemName}</h3>
                   <p className="text-sm text-gray-500">{item.itemModel}</p>
                   <p className="mt-2 text-xl font-bold">Rs.{item.price}</p>
                 </div>
-                
               </div>
-              <p className="text-sm text-gray-600">{item.quantity} {item.quantityLabel}</p>
+              <p className="text-sm text-gray-600">
+                {item.quantity} {item.quantityLabel}
+              </p>
             </div>
           ))}
         </div>
@@ -209,7 +249,11 @@ const Inventory = () => {
               >
                 ❌
               </button>
-              <h2 className="text-xl font-bold mb-6 text-center">What would you like to do with <span className="text-indigo-700">{selectedItem.itemName}</span>?</h2>
+              <h2 className="text-xl font-bold mb-6 text-center">
+                What would you like to do with{" "}
+                <span className="text-indigo-700">{selectedItem.itemName}</span>
+                ?
+              </h2>
               <div className="flex gap-6 w-full justify-center">
                 <button
                   className="bg-blue-700 text-white px-6 py-2 rounded-xl font-semibold hover:bg-blue-800 transition"
@@ -240,13 +284,15 @@ const Inventory = () => {
               </button>
               <h3 className="text-xl font-semibold mb-4">Enter Details</h3>
               <label className="block mb-4">
-                <span className="font-bold">Item Name:</span> {selectedItem.itemName}
+                <span className="font-bold">Item Name:</span>{" "}
+                {selectedItem.itemName}
               </label>
               <label className="block mb-4">
-                <span className="font-bold">Item Model:</span> {selectedItem.itemModel}
+                <span className="font-bold">Item Model:</span>{" "}
+                {selectedItem.itemModel}
               </label>
               <label className="block mb-4">
-             <span className='font-bold'>Customer ID:</span>
+                <span className="font-bold">Customer ID:</span>
                 <input
                   type="text"
                   value={customerId}
@@ -255,7 +301,7 @@ const Inventory = () => {
                 />
               </label>
               <label className="block mb-4">
-             <span className='font-bold'>Vehicle ID:</span>
+                <span className="font-bold">Vehicle ID:</span>
                 <input
                   type="text"
                   value={vehicleId}
@@ -264,7 +310,7 @@ const Inventory = () => {
                 />
               </label>
               <label className="block mb-4">
-            <span className='font-bold'>Quantity:</span>
+                <span className="font-bold">Quantity:</span>
                 <input
                   type="number"
                   value={ItemQuantity}
@@ -420,7 +466,10 @@ const Inventory = () => {
             >
               <button
                 className="absolute top-3 right-3 text-2xl text-gray-500 hover:text-gray-700"
-                onClick={() => { setShowNewEditPopup(false); setEditItemData(null); }}
+                onClick={() => {
+                  setShowNewEditPopup(false);
+                  setEditItemData(null);
+                }}
                 type="button"
               >
                 ❌
@@ -438,8 +487,13 @@ const Inventory = () => {
                   <input
                     type="text"
                     id="itemName"
-                    value={editItemData.itemName || ''}
-                    onChange={e => setEditItemData({ ...editItemData, itemName: e.target.value })}
+                    value={editItemData.itemName || ""}
+                    onChange={(e) =>
+                      setEditItemData({
+                        ...editItemData,
+                        itemName: e.target.value,
+                      })
+                    }
                     required
                     className="p-2 border border-gray-300 rounded-xl"
                   />
@@ -451,8 +505,13 @@ const Inventory = () => {
                   <input
                     type="text"
                     id="itemModel"
-                    value={editItemData.itemModel || ''}
-                    onChange={e => setEditItemData({ ...editItemData, itemModel: e.target.value })}
+                    value={editItemData.itemModel || ""}
+                    onChange={(e) =>
+                      setEditItemData({
+                        ...editItemData,
+                        itemModel: e.target.value,
+                      })
+                    }
                     required
                     className="p-2 border border-gray-300 rounded-xl"
                   />
@@ -466,8 +525,13 @@ const Inventory = () => {
                   <input
                     type="text"
                     id="Brand"
-                    value={editItemData.brand || ''}
-                    onChange={e => setEditItemData({ ...editItemData, brand: e.target.value })}
+                    value={editItemData.brand || ""}
+                    onChange={(e) =>
+                      setEditItemData({
+                        ...editItemData,
+                        brand: e.target.value,
+                      })
+                    }
                     required
                     className="p-2 border border-gray-300 rounded-xl"
                   />
@@ -479,8 +543,13 @@ const Inventory = () => {
                   <input
                     type="number"
                     id="PricePerUnit"
-                    value={editItemData.price || ''}
-                    onChange={e => setEditItemData({ ...editItemData, price: e.target.value })}
+                    value={editItemData.price || ""}
+                    onChange={(e) =>
+                      setEditItemData({
+                        ...editItemData,
+                        price: e.target.value,
+                      })
+                    }
                     required
                     className="p-2 border border-gray-300 rounded-xl"
                   />
@@ -494,8 +563,13 @@ const Inventory = () => {
                   <input
                     type="number"
                     id="Quantity"
-                    value={editItemData.quantity || ''}
-                    onChange={e => setEditItemData({ ...editItemData, quantity: e.target.value })}
+                    value={editItemData.quantity || ""}
+                    onChange={(e) =>
+                      setEditItemData({
+                        ...editItemData,
+                        quantity: e.target.value,
+                      })
+                    }
                     required
                     className="p-2 border border-gray-300 rounded-xl"
                   />
@@ -507,8 +581,13 @@ const Inventory = () => {
                   <input
                     type="text"
                     id="quantitylabel"
-                    value={editItemData.quantityLabel || ''}
-                    onChange={e => setEditItemData({ ...editItemData, quantityLabel: e.target.value })}
+                    value={editItemData.quantityLabel || ""}
+                    onChange={(e) =>
+                      setEditItemData({
+                        ...editItemData,
+                        quantityLabel: e.target.value,
+                      })
+                    }
                     required
                     className="p-2 border border-gray-300 rounded-xl"
                   />
@@ -521,8 +600,13 @@ const Inventory = () => {
                 <textarea
                   id="description"
                   placeholder="Description"
-                  value={editItemData.description || ''}
-                  onChange={e => setEditItemData({ ...editItemData, description: e.target.value })}
+                  value={editItemData.description || ""}
+                  onChange={(e) =>
+                    setEditItemData({
+                      ...editItemData,
+                      description: e.target.value,
+                    })
+                  }
                   className="p-3 border border-gray-300 rounded-xl w-full h-32 resize-y"
                 />
               </div>

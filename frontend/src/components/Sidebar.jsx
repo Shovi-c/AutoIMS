@@ -1,4 +1,12 @@
-import { Search, User, LayoutDashboard, Users, Wrench, Boxes, CreditCard } from "lucide-react";
+import {
+  Search,
+  User,
+  LayoutDashboard,
+  Users,
+  Wrench,
+  Boxes,
+  CreditCard,
+} from "lucide-react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 
@@ -32,23 +40,25 @@ export default function Sidebar() {
   useEffect(() => {
     if (!showLogoutDropdown) return;
     const handleClick = (e) => {
-      if (!e.target.closest('.user-dropdown-trigger')) {
+      if (!e.target.closest(".user-dropdown-trigger")) {
         setShowLogoutDropdown(false);
       }
     };
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
   }, [showLogoutDropdown]);
 
   return (
     <div className="flex min-h-screen bg-stone-200">
       {/* Sidebar */}
-      <aside className={`transition-all duration-300 ${collapsed ? 'w-20' : 'w-60'} bg-stone-200 border-r border-gray-300 p-4 flex flex-col`}>
+      <aside
+        className={`transition-all duration-300 ${collapsed ? "w-20" : "w-60"} bg-stone-200 border-r border-gray-300 p-4 flex flex-col`}
+      >
         <button
           className="mb-6 text-xl font-semibold focus:outline-none text-left w-full"
           onClick={handleSidebarToggle}
           title="Toggle Sidebar"
-          style={{justifyContent: 'flex-start'}}
+          style={{ justifyContent: "flex-start" }}
         >
           ☰
         </button>
@@ -129,7 +139,9 @@ export default function Sidebar() {
       {showLogoutPopup && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-30">
           <div className="bg-white p-8 rounded-2xl shadow-xl flex flex-col items-center">
-            <h2 className="text-xl font-bold mb-4">Are you sure you want to logout?</h2>
+            <h2 className="text-xl font-bold mb-4">
+              Are you sure you want to logout?
+            </h2>
             <div className="flex gap-6 mt-2">
               <button
                 className="bg-red-600 text-white px-6 py-2 rounded-xl font-semibold hover:bg-red-700 transition"
@@ -158,7 +170,7 @@ function SidebarItem({ icon, label, active, collapsed }) {
         active
           ? "bg-purple-100 text-purple-700"
           : "text-gray-600 hover:bg-gray-100"
-      } ${collapsed ? 'justify-center' : ''}`}
+      } ${collapsed ? "justify-center" : ""}`}
       style={{ minHeight: 44 }}
     >
       {icon}

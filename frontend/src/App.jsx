@@ -53,11 +53,17 @@ export default function App() {
 
         {/* Sidebar Layout (No Navbar / Footer) */}
         <Route element={<SidebarLayout />}>
-          <Route path="/sidebar" element={<Navigate to="/sidebar/dashboard" />} />
+          <Route
+            path="/sidebar"
+            element={<Navigate to="/sidebar/dashboard" />}
+          />
           <Route path="/sidebar/dashboard" element={<Dashboard />} />
           <Route path="/sidebar/billing" element={<Billing />} />
           <Route path="/sidebar/employees" element={<Employee />} />
-          <Route path="/sidebar/service_requests" element={<Service_request />} />
+          <Route
+            path="/sidebar/service_requests"
+            element={<Service_request />}
+          />
           <Route path="/sidebar/inventory" element={<Inventory />} />
         </Route>
       </Routes>

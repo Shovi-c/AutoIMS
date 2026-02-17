@@ -9,11 +9,16 @@ export default function Navbar() {
             <Link
               to="/"
               className="text-3xl font-bold text-indigo-700 leading-none"
-            >        <div className="flex items-center">
+            >
+              {" "}
+              <div className="flex items-center">
+                <img
+                  src="/autoims.png"
+                  alt="AutoIMS Logo"
+                  className="w-16 h-16"
+                />
 
-              <img src="/autoims.png" alt="AutoIMS Logo" className="w-16 h-16" />
-
-              <span>AutoIMS</span>
+                <span>AutoIMS</span>
               </div>
             </Link>
 
@@ -28,8 +33,9 @@ export default function Navbar() {
               }
             >
                 </NavLink> */}
-              <span className="text-gray-900 text-xl font-bold hover:text-indigo-700">Overview</span>
-          
+            <span className="text-gray-900 text-xl font-bold hover:text-indigo-700">
+              Overview
+            </span>
           </div>
 
           {/* Right group: Auth */}

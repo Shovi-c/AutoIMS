@@ -82,8 +82,8 @@ def token_required(f):
             user_id = payload['user_id']
             
             # Get the user from database
-            from models.user import User
-            current_user = User.query.get(user_id)
+            from models.user import get_user_by_id
+            current_user = get_user_by_id(user_id)
             
             if not current_user:
                 return jsonify({'error': 'User not found'}), 401

@@ -9,9 +9,7 @@ Flask==3.0.0                    # Web framework
 Werkzeug==3.0.1                 # WSGI utility library (Flask dependency)
 
 # --- Database ---
-Flask-SQLAlchemy==3.1.1         # SQLAlchemy integration for Flask
-SQLAlchemy>=2.0.0               # Python SQL toolkit and ORM
-psycopg[binary]>=3.1.0          # PostgreSQL adapter (psycopg3)
+psycopg[binary]>=3.1.0          # PostgreSQL adapter (psycopg3, raw SQL, no ORM)
 
 # --- Authentication & Security ---
 PyJWT==2.8.0                    # JSON Web Token implementation

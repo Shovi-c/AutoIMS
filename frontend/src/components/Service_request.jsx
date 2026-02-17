@@ -1,45 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 const Service_request = () => {
   const initialRequests = [
     {
-      customerId: 'CUST001',
-      customerName: 'John Doe',
-      phone: '1234567890',
-      email: 'john@example.com',
-      address: '123 Main St',
-      vehicleModel: 'Toyota Corolla',
-      vehicleType: 'Sedan',
-      vehicleBrand: 'Toyota',
-      problem: 'Engine noise',
-      employees: [
-        { employeeId: 'EMP001', employeeName: 'Mike Johnson' },
-      ],
-      assignment: 'Engine check',
+      customerId: "CUST001",
+      customerName: "John Doe",
+      phone: "1234567890",
+      email: "john@example.com",
+      address: "123 Main St",
+      vehicleModel: "Toyota Corolla",
+      vehicleType: "Sedan",
+      vehicleBrand: "Toyota",
+      problem: "Engine noise",
+      employees: [{ employeeId: "EMP001", employeeName: "Mike Johnson" }],
+      assignment: "Engine check",
     },
     {
-      customerId: 'CUST002',
-      customerName: 'Jane Smith',
-      phone: '9876543210',
-      email: 'jane@example.com',
-      address: '456 Oak Ave',
-      vehicleModel: 'Honda Civic',
-      vehicleType: 'Sedan',
-      vehicleBrand: 'Honda',
-      problem: 'Brake issue',
-      employees: [
-        { employeeId: 'EMP002', employeeName: 'Lucy Lee' },
-      ],
-      assignment: 'Brake replacement',
+      customerId: "CUST002",
+      customerName: "Jane Smith",
+      phone: "9876543210",
+      email: "jane@example.com",
+      address: "456 Oak Ave",
+      vehicleModel: "Honda Civic",
+      vehicleType: "Sedan",
+      vehicleBrand: "Honda",
+      problem: "Brake issue",
+      employees: [{ employeeId: "EMP002", employeeName: "Lucy Lee" }],
+      assignment: "Brake replacement",
     },
   ];
 
   const employeeList = [
-    { employeeId: 'EMP001', employeeName: 'Mike Johnson' },
-    { employeeId: 'EMP002', employeeName: 'Lucy Lee' },
-    { employeeId: 'EMP003', employeeName: 'Jane Smith' },
-    { employeeId: 'EMP004', employeeName: 'Sam Brown' },
-    { employeeId: 'EMP005', employeeName: 'John Doe' },
+    { employeeId: "EMP001", employeeName: "Mike Johnson" },
+    { employeeId: "EMP002", employeeName: "Lucy Lee" },
+    { employeeId: "EMP003", employeeName: "Jane Smith" },
+    { employeeId: "EMP004", employeeName: "Sam Brown" },
+    { employeeId: "EMP005", employeeName: "John Doe" },
   ];
 
   const [requests, setRequests] = useState(initialRequests);
@@ -48,19 +44,18 @@ const Service_request = () => {
   const [editRequestData, setEditRequestData] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
 
-
   const [newRequest, setNewRequest] = useState({
-    customerId: '',
-    customerName: '',
-    phone: '',
-    email: '',
-    address: '',
-    vehicleModel: '',
-    vehicleType: '',
-    vehicleBrand: '',
-    problem: '',
+    customerId: "",
+    customerName: "",
+    phone: "",
+    email: "",
+    address: "",
+    vehicleModel: "",
+    vehicleType: "",
+    vehicleBrand: "",
+    problem: "",
     employees: [],
-    assignment: '',
+    assignment: "",
   });
 
   const handleAddRequest = (e) => {
@@ -68,7 +63,17 @@ const Service_request = () => {
     setRequests([...requests, newRequest]);
     setShowAddPopup(false);
     setNewRequest({
-      customerId: '', customerName: '', phone: '', email: '', address: '', vehicleModel: '', vehicleType: '', vehicleBrand: '', problem: '', employees: [], assignment: '',
+      customerId: "",
+      customerName: "",
+      phone: "",
+      email: "",
+      address: "",
+      vehicleModel: "",
+      vehicleType: "",
+      vehicleBrand: "",
+      problem: "",
+      employees: [],
+      assignment: "",
     });
   };
 
@@ -79,14 +84,25 @@ const Service_request = () => {
 
   const handleEmployeeSelect = (e) => {
     const value = e.target.value;
-    const found = employeeList.find(emp => emp.employeeId === value || emp.employeeName === value);
-    if (found && !newRequest.employees.some(emp => emp.employeeId === found.employeeId)) {
-      setNewRequest(prev => ({ ...prev, employees: [...prev.employees, found] }));
+    const found = employeeList.find(
+      (emp) => emp.employeeId === value || emp.employeeName === value,
+    );
+    if (
+      found &&
+      !newRequest.employees.some((emp) => emp.employeeId === found.employeeId)
+    ) {
+      setNewRequest((prev) => ({
+        ...prev,
+        employees: [...prev.employees, found],
+      }));
     }
   };
 
   const handleRemoveEmployee = (empId) => {
-    setNewRequest(prev => ({ ...prev, employees: prev.employees.filter(emp => emp.employeeId !== empId) }));
+    setNewRequest((prev) => ({
+      ...prev,
+      employees: prev.employees.filter((emp) => emp.employeeId !== empId),
+    }));
   };
 
   const handleEditRequest = (req) => {
@@ -103,26 +119,43 @@ const Service_request = () => {
   };
   const handleEditPopupSubmit = (e) => {
     e.preventDefault();
-    setRequests(requests.map((req, idx) =>
-      idx === editRequestData.idx ? { ...editRequestData } : req
-    ));
+    setRequests(
+      requests.map((req, idx) =>
+        idx === editRequestData.idx ? { ...editRequestData } : req,
+      ),
+    );
     handleEditPopupClose();
   };
 
   const handleEditEmployeeSelect = (e) => {
     const value = e.target.value;
-    const found = employeeList.find(emp => emp.employeeId === value || emp.employeeName === value);
-    if (found && !editRequestData.employees.some(emp => emp.employeeId === found.employeeId)) {
-      setEditRequestData(prev => ({ ...prev, employees: [...prev.employees, found] }));
+    const found = employeeList.find(
+      (emp) => emp.employeeId === value || emp.employeeName === value,
+    );
+    if (
+      found &&
+      !editRequestData.employees.some(
+        (emp) => emp.employeeId === found.employeeId,
+      )
+    ) {
+      setEditRequestData((prev) => ({
+        ...prev,
+        employees: [...prev.employees, found],
+      }));
     }
   };
 
   const handleEditRemoveEmployee = (empId) => {
-    setEditRequestData(prev => ({ ...prev, employees: prev.employees.filter(emp => emp.employeeId !== empId) }));
+    setEditRequestData((prev) => ({
+      ...prev,
+      employees: prev.employees.filter((emp) => emp.employeeId !== empId),
+    }));
   };
 
   const handleDeleteRequest = (idx) => {
-    if (window.confirm('Are you sure you want to delete this service request?')) {
+    if (
+      window.confirm("Are you sure you want to delete this service request?")
+    ) {
       setRequests(requests.filter((_, i) => i !== idx));
     }
   };
@@ -130,12 +163,14 @@ const Service_request = () => {
   const filteredRequests = requests.filter(
     (req) =>
       req.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      req.customerId.toLowerCase().includes(searchTerm.toLowerCase())
+      req.customerId.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   return (
     <div className="w-full max-w-full mx-auto p-6">
-      <h1 className="text-4xl font-extrabold text-indigo-700 mb-5">Service Requests</h1>
+      <h1 className="text-4xl font-extrabold text-indigo-700 mb-5">
+        Service Requests
+      </h1>
       <div className="flex justify-between items-center mb-6">
         <input
           type="text"
@@ -149,7 +184,9 @@ const Service_request = () => {
           onClick={() => setShowAddPopup(true)}
         >
           <span className="block text-purple-600 text-lg mb-1">➕</span>
-          <span className="text-sm font-medium text-purple-700">Add Service Request</span>
+          <span className="text-sm font-medium text-purple-700">
+            Add Service Request
+          </span>
         </button>
       </div>
       <div className="overflow-x-auto">
@@ -171,13 +208,29 @@ const Service_request = () => {
                 <td className="p-3">{req.customerName}</td>
                 <td className="p-3">{req.customerId}</td>
                 <td className="p-3">
-                  {req.employees && req.employees.length > 0 ? req.employees.map(emp => (
-                    <span key={emp.employeeId} className="block font-semibold">{emp.employeeName} <span className="text-xs text-gray-500">({emp.employeeId})</span></span>
-                  )) : <span className="text-gray-400">-</span>}
+                  {req.employees && req.employees.length > 0 ? (
+                    req.employees.map((emp) => (
+                      <span
+                        key={emp.employeeId}
+                        className="block font-semibold"
+                      >
+                        {emp.employeeName}{" "}
+                        <span className="text-xs text-gray-500">
+                          ({emp.employeeId})
+                        </span>
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-gray-400">-</span>
+                  )}
                 </td>
                 <td className="p-3">
-                  <span className="block font-semibold">{req.vehicleModel}</span>
-                  <span className="block text-xs text-gray-500">{req.vehicleId || req.vehicleModel}</span>
+                  <span className="block font-semibold">
+                    {req.vehicleModel}
+                  </span>
+                  <span className="block text-xs text-gray-500">
+                    {req.vehicleId || req.vehicleModel}
+                  </span>
                 </td>
                 <td className="p-3">{req.problem}</td>
                 <td className="p-3">{req.assignment}</td>
@@ -214,76 +267,172 @@ const Service_request = () => {
               ❌
             </button>
             <div className="flex flex-col items-center space-y-6 mb-4">
-              <h2 className="text-3xl font-bold text-center">Add Service Request</h2>
+              <h2 className="text-3xl font-bold text-center">
+                Add Service Request
+              </h2>
             </div>
             <div className="flex flex-col sm:flex-row gap-4 w-full">
               <div className="flex-1">
-                <label className="mb-1 font-medium block">Customer ID <span className="text-red-500">*</span></label>
-                <input name="customerId" value={newRequest.customerId} onChange={handleNewRequestChange} required className="p-2 border border-gray-300 rounded-xl w-full" />
+                <label className="mb-1 font-medium block">
+                  Customer ID <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="customerId"
+                  value={newRequest.customerId}
+                  onChange={handleNewRequestChange}
+                  required
+                  className="p-2 border border-gray-300 rounded-xl w-full"
+                />
               </div>
               <div className="flex-1">
-                <label className="mb-1 font-medium block">Customer Name <span className="text-red-500">*</span></label>
-                <input name="customerName" value={newRequest.customerName} onChange={handleNewRequestChange} required className="p-2 border border-gray-300 rounded-xl w-full" />
-              </div>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-4 w-full">
-              <div className="flex-1">
-                <label className="mb-1 font-medium block">Phone <span className="text-red-500">*</span></label>
-                <input name="phone" value={newRequest.phone} onChange={handleNewRequestChange} required className="p-2 border border-gray-300 rounded-xl w-full" />
-              </div>
-              <div className="flex-1">
-                <label className="mb-1 font-medium block">Email <span className="text-red-500">*</span></label>
-                <input name="email" value={newRequest.email} onChange={handleNewRequestChange} required className="p-2 border border-gray-300 rounded-xl w-full" />
-              </div>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-4 w-full">
-              <div className="flex-1">
-                <label className="mb-1 font-medium block">Address <span className="text-red-500">*</span></label>
-                <input name="address" value={newRequest.address} onChange={handleNewRequestChange} required className="p-2 border border-gray-300 rounded-xl w-full" />
-              </div>
-              <div className="flex-1">
-                <label className="mb-1 font-medium block">Vehicle Model <span className="text-red-500">*</span></label>
-                <input name="vehicleModel" value={newRequest.vehicleModel} onChange={handleNewRequestChange} required className="p-2 border border-gray-300 rounded-xl w-full" />
-              </div>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-4 w-full">
-              <div className="flex-1">
-                <label className="mb-1 font-medium block">Vehicle Type <span className="text-red-500">*</span></label>
-                <input name="vehicleType" value={newRequest.vehicleType} onChange={handleNewRequestChange} required className="p-2 border border-gray-300 rounded-xl w-full" />
-              </div>
-              <div className="flex-1">
-                <label className="mb-1 font-medium block">Vehicle Brand <span className="text-red-500">*</span></label>
-                <input name="vehicleBrand" value={newRequest.vehicleBrand} onChange={handleNewRequestChange} required className="p-2 border border-gray-300 rounded-xl w-full" />
+                <label className="mb-1 font-medium block">
+                  Customer Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="customerName"
+                  value={newRequest.customerName}
+                  onChange={handleNewRequestChange}
+                  required
+                  className="p-2 border border-gray-300 rounded-xl w-full"
+                />
               </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-4 w-full">
               <div className="flex-1">
-                <label className="mb-1 font-medium block">Problem <span className="text-red-500">*</span></label>
-                <input name="problem" value={newRequest.problem} onChange={handleNewRequestChange} required className="p-2 border border-gray-300 rounded-xl w-full" />
+                <label className="mb-1 font-medium block">
+                  Phone <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="phone"
+                  value={newRequest.phone}
+                  onChange={handleNewRequestChange}
+                  required
+                  className="p-2 border border-gray-300 rounded-xl w-full"
+                />
               </div>
               <div className="flex-1">
-                <label className="mb-1 font-medium block">Employees <span className="text-red-500">*</span></label>
+                <label className="mb-1 font-medium block">
+                  Email <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="email"
+                  value={newRequest.email}
+                  onChange={handleNewRequestChange}
+                  required
+                  className="p-2 border border-gray-300 rounded-xl w-full"
+                />
+              </div>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-4 w-full">
+              <div className="flex-1">
+                <label className="mb-1 font-medium block">
+                  Address <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="address"
+                  value={newRequest.address}
+                  onChange={handleNewRequestChange}
+                  required
+                  className="p-2 border border-gray-300 rounded-xl w-full"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="mb-1 font-medium block">
+                  Vehicle Model <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="vehicleModel"
+                  value={newRequest.vehicleModel}
+                  onChange={handleNewRequestChange}
+                  required
+                  className="p-2 border border-gray-300 rounded-xl w-full"
+                />
+              </div>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-4 w-full">
+              <div className="flex-1">
+                <label className="mb-1 font-medium block">
+                  Vehicle Type <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="vehicleType"
+                  value={newRequest.vehicleType}
+                  onChange={handleNewRequestChange}
+                  required
+                  className="p-2 border border-gray-300 rounded-xl w-full"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="mb-1 font-medium block">
+                  Vehicle Brand <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="vehicleBrand"
+                  value={newRequest.vehicleBrand}
+                  onChange={handleNewRequestChange}
+                  required
+                  className="p-2 border border-gray-300 rounded-xl w-full"
+                />
+              </div>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-4 w-full">
+              <div className="flex-1">
+                <label className="mb-1 font-medium block">
+                  Problem <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="problem"
+                  value={newRequest.problem}
+                  onChange={handleNewRequestChange}
+                  required
+                  className="p-2 border border-gray-300 rounded-xl w-full"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="mb-1 font-medium block">
+                  Employees <span className="text-red-500">*</span>
+                </label>
                 <input
                   list="employee-list"
                   placeholder="Type employee name or ID"
-                  onBlur={e => { e.target.value = ''; }}
-                  onKeyDown={e => { if (e.key === 'Enter') { handleEmployeeSelect(e); e.preventDefault(); } }}
+                  onBlur={(e) => {
+                    e.target.value = "";
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleEmployeeSelect(e);
+                      e.preventDefault();
+                    }
+                  }}
                   onChange={handleEmployeeSelect}
                   className="p-2 border border-gray-300 rounded-xl w-full"
                 />
                 <datalist id="employee-list">
-                  {employeeList.map(emp => (
-                    <option key={emp.employeeId} value={emp.employeeId}>{emp.employeeName}</option>
+                  {employeeList.map((emp) => (
+                    <option key={emp.employeeId} value={emp.employeeId}>
+                      {emp.employeeName}
+                    </option>
                   ))}
-                  {employeeList.map(emp => (
-                    <option key={emp.employeeName} value={emp.employeeName}>{emp.employeeId}</option>
+                  {employeeList.map((emp) => (
+                    <option key={emp.employeeName} value={emp.employeeName}>
+                      {emp.employeeId}
+                    </option>
                   ))}
                 </datalist>
                 <div className="flex flex-wrap gap-2 mt-2">
-                  {newRequest.employees.map(emp => (
-                    <span key={emp.employeeId} className="bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full text-xs flex items-center">
+                  {newRequest.employees.map((emp) => (
+                    <span
+                      key={emp.employeeId}
+                      className="bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full text-xs flex items-center"
+                    >
                       {emp.employeeName} ({emp.employeeId})
-                      <button type="button" className="ml-1 text-red-500" onClick={() => handleRemoveEmployee(emp.employeeId)}>×</button>
+                      <button
+                        type="button"
+                        className="ml-1 text-red-500"
+                        onClick={() => handleRemoveEmployee(emp.employeeId)}
+                      >
+                        ×
+                      </button>
                     </span>
                   ))}
                 </div>
@@ -291,8 +440,16 @@ const Service_request = () => {
             </div>
             <div className="flex flex-col sm:flex-row gap-4 w-full">
               <div className="flex-1">
-                <label className="mb-1 font-medium block">Assignment <span className="text-red-500">*</span></label>
-                <input name="assignment" value={newRequest.assignment} onChange={handleNewRequestChange} required className="p-2 border border-gray-300 rounded-xl w-full" />
+                <label className="mb-1 font-medium block">
+                  Assignment <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="assignment"
+                  value={newRequest.assignment}
+                  onChange={handleNewRequestChange}
+                  required
+                  className="p-2 border border-gray-300 rounded-xl w-full"
+                />
               </div>
             </div>
             <button
@@ -318,85 +475,193 @@ const Service_request = () => {
               ❌
             </button>
             <div className="flex flex-col items-center space-y-6 mb-4">
-              <h2 className="text-3xl font-bold text-center">Edit Service Request</h2>
+              <h2 className="text-3xl font-bold text-center">
+                Edit Service Request
+              </h2>
             </div>
             <div className="flex flex-col sm:flex-row gap-4 w-full">
               <div className="flex-1">
-                <label className="mb-1 font-medium block">Customer ID <span className="text-red-500">*</span></label>
-                <input name="customerId" value={editRequestData.customerId} onChange={handleEditRequestChange} required className="p-2 border border-gray-300 rounded-xl w-full" />
+                <label className="mb-1 font-medium block">
+                  Customer ID <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="customerId"
+                  value={editRequestData.customerId}
+                  onChange={handleEditRequestChange}
+                  required
+                  className="p-2 border border-gray-300 rounded-xl w-full"
+                />
               </div>
               <div className="flex-1">
-                <label className="mb-1 font-medium block">Customer Name <span className="text-red-500">*</span></label>
-                <input name="customerName" value={editRequestData.customerName} onChange={handleEditRequestChange} required className="p-2 border border-gray-300 rounded-xl w-full" />
-              </div>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-4 w-full">
-              <div className="flex-1">
-                <label className="mb-1 font-medium block">Phone <span className="text-red-500">*</span></label>
-                <input name="phone" value={editRequestData.phone} onChange={handleEditRequestChange} required className="p-2 border border-gray-300 rounded-xl w-full" />
-              </div>
-              <div className="flex-1">
-                <label className="mb-1 font-medium block">Email <span className="text-red-500">*</span></label>
-                <input name="email" value={editRequestData.email} onChange={handleEditRequestChange} required className="p-2 border border-gray-300 rounded-xl w-full" />
-              </div>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-4 w-full">
-              <div className="flex-1">
-                <label className="mb-1 font-medium block">Address <span className="text-red-500">*</span></label>
-                <input name="address" value={editRequestData.address} onChange={handleEditRequestChange} required className="p-2 border border-gray-300 rounded-xl w-full" />
-              </div>
-              <div className="flex-1">
-                <label className="mb-1 font-medium block">Vehicle Model <span className="text-red-500">*</span></label>
-                <input name="vehicleModel" value={editRequestData.vehicleModel} onChange={handleEditRequestChange} required className="p-2 border border-gray-300 rounded-xl w-full" />
-              </div>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-4 w-full">
-              <div className="flex-1">
-                <label className="mb-1 font-medium block">Vehicle Type <span className="text-red-500">*</span></label>
-                <input name="vehicleType" value={editRequestData.vehicleType} onChange={handleEditRequestChange} required className="p-2 border border-gray-300 rounded-xl w-full" />
-              </div>
-              <div className="flex-1">
-                <label className="mb-1 font-medium block">Vehicle Brand <span className="text-red-500">*</span></label>
-                <input name="vehicleBrand" value={editRequestData.vehicleBrand} onChange={handleEditRequestChange} required className="p-2 border border-gray-300 rounded-xl w-full" />
+                <label className="mb-1 font-medium block">
+                  Customer Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="customerName"
+                  value={editRequestData.customerName}
+                  onChange={handleEditRequestChange}
+                  required
+                  className="p-2 border border-gray-300 rounded-xl w-full"
+                />
               </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-4 w-full">
               <div className="flex-1">
-                <label className="mb-1 font-medium block">Problem <span className="text-red-500">*</span></label>
-                <input name="problem" value={editRequestData.problem} onChange={handleEditRequestChange} required className="p-2 border border-gray-300 rounded-xl w-full" />
+                <label className="mb-1 font-medium block">
+                  Phone <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="phone"
+                  value={editRequestData.phone}
+                  onChange={handleEditRequestChange}
+                  required
+                  className="p-2 border border-gray-300 rounded-xl w-full"
+                />
               </div>
               <div className="flex-1">
-                <label className="mb-1 font-medium block">Employees <span className="text-red-500">*</span></label>
+                <label className="mb-1 font-medium block">
+                  Email <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="email"
+                  value={editRequestData.email}
+                  onChange={handleEditRequestChange}
+                  required
+                  className="p-2 border border-gray-300 rounded-xl w-full"
+                />
+              </div>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-4 w-full">
+              <div className="flex-1">
+                <label className="mb-1 font-medium block">
+                  Address <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="address"
+                  value={editRequestData.address}
+                  onChange={handleEditRequestChange}
+                  required
+                  className="p-2 border border-gray-300 rounded-xl w-full"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="mb-1 font-medium block">
+                  Vehicle Model <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="vehicleModel"
+                  value={editRequestData.vehicleModel}
+                  onChange={handleEditRequestChange}
+                  required
+                  className="p-2 border border-gray-300 rounded-xl w-full"
+                />
+              </div>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-4 w-full">
+              <div className="flex-1">
+                <label className="mb-1 font-medium block">
+                  Vehicle Type <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="vehicleType"
+                  value={editRequestData.vehicleType}
+                  onChange={handleEditRequestChange}
+                  required
+                  className="p-2 border border-gray-300 rounded-xl w-full"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="mb-1 font-medium block">
+                  Vehicle Brand <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="vehicleBrand"
+                  value={editRequestData.vehicleBrand}
+                  onChange={handleEditRequestChange}
+                  required
+                  className="p-2 border border-gray-300 rounded-xl w-full"
+                />
+              </div>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-4 w-full">
+              <div className="flex-1">
+                <label className="mb-1 font-medium block">
+                  Problem <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="problem"
+                  value={editRequestData.problem}
+                  onChange={handleEditRequestChange}
+                  required
+                  className="p-2 border border-gray-300 rounded-xl w-full"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="mb-1 font-medium block">
+                  Employees <span className="text-red-500">*</span>
+                </label>
                 <input
                   list="employee-list-edit"
                   placeholder="Type employee name or ID"
-                  onBlur={e => { e.target.value = ''; }}
-                  onKeyDown={e => { if (e.key === 'Enter') { handleEditEmployeeSelect(e); e.preventDefault(); } }}
+                  onBlur={(e) => {
+                    e.target.value = "";
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleEditEmployeeSelect(e);
+                      e.preventDefault();
+                    }
+                  }}
                   onChange={handleEditEmployeeSelect}
                   className="p-2 border border-gray-300 rounded-xl w-full"
                 />
                 <datalist id="employee-list-edit">
-                  {employeeList.map(emp => (
-                    <option key={emp.employeeId} value={emp.employeeId}>{emp.employeeName}</option>
+                  {employeeList.map((emp) => (
+                    <option key={emp.employeeId} value={emp.employeeId}>
+                      {emp.employeeName}
+                    </option>
                   ))}
-                  {employeeList.map(emp => (
-                    <option key={emp.employeeName} value={emp.employeeName}>{emp.employeeId}</option>
+                  {employeeList.map((emp) => (
+                    <option key={emp.employeeName} value={emp.employeeName}>
+                      {emp.employeeId}
+                    </option>
                   ))}
                 </datalist>
                 <div className="flex flex-wrap gap-2 mt-2">
-                  {editRequestData && editRequestData.employees && editRequestData.employees.map(emp => (
-                    <span key={emp.employeeId} className="bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full text-xs flex items-center">
-                      {emp.employeeName} ({emp.employeeId})
-                      <button type="button" className="ml-1 text-red-500" onClick={() => handleEditRemoveEmployee(emp.employeeId)}>×</button>
-                    </span>
-                  ))}
+                  {editRequestData &&
+                    editRequestData.employees &&
+                    editRequestData.employees.map((emp) => (
+                      <span
+                        key={emp.employeeId}
+                        className="bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full text-xs flex items-center"
+                      >
+                        {emp.employeeName} ({emp.employeeId})
+                        <button
+                          type="button"
+                          className="ml-1 text-red-500"
+                          onClick={() =>
+                            handleEditRemoveEmployee(emp.employeeId)
+                          }
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
                 </div>
               </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-4 w-full">
               <div className="flex-1">
-                <label className="mb-1 font-medium block">Assignment <span className="text-red-500">*</span></label>
-                <input name="assignment" value={editRequestData.assignment} onChange={handleEditRequestChange} required className="p-2 border border-gray-300 rounded-xl w-full" />
+                <label className="mb-1 font-medium block">
+                  Assignment <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="assignment"
+                  value={editRequestData.assignment}
+                  onChange={handleEditRequestChange}
+                  required
+                  className="p-2 border border-gray-300 rounded-xl w-full"
+                />
               </div>
             </div>
             <button

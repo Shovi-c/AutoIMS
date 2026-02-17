@@ -1,6 +1,4 @@
-"""
-Database module - Re-exports from db/connection.py for backward compatibility.
-"""
+"""Database module exports."""
 from db.connection import (
     get_connection,
     get_db_connection,

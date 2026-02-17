@@ -1,25 +1,50 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
+const API_BASE = "http://localhost:5000/api";
+
 const Signup = () => {
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError("");
 
-    // Simulate form submission and navigation
-    setTimeout(() => {
-      // Navigate to login page after submission
-      navigate("/login");
-    }, 1000); // You can adjust the delay as needed
+    try {
+      const response = await fetch(`${API_BASE}/signup`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          username,
+          email,
+          password,
+        }),
+      });
 
-    setLoading(false);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Signup failed");
+      }
+
+      // Store token and navigate to dashboard
+      localStorage.setItem("token", data.token);
+      navigate("/sidebar/dashboard");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -34,6 +59,12 @@ const Signup = () => {
         <p className="mt-1 text-sm text-gray-700 font-semibold">
           Manage your Services.
         </p>
+
+        {error && (
+          <div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
+            {error}
+          </div>
+        )}
 
         <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
