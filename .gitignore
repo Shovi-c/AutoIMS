@@ -121,3 +121,10 @@ coverage/
 *.temp
 *.cache
 .cache/
+
+# -----------------
+# Project Documentation (excluded from git)
+# -----------------
+PROJECT_DOCUMENTATION.md
+
+

@@ -1,17 +1,37 @@
-# AutoIMS - Vehicle Inventory Management System
+# AutoIMS - Auto Inventory Management System
 
-AutoIMS is a comprehensive web-based application designed for managing vehicle service operations. It provides an integrated system for handling customer information, vehicle details, service requests, inventory management, job tracking, and billing.
+A comprehensive web-based application for managing vehicle service operations with integrated inventory, billing, and employee management.
+
+---
+
+## Table of Contents
+
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Database Schema](#database-schema)
+- [Installation](#installation)
+- [Usage](#usage)
+- [API Reference](#api-reference)
+- [Application Workflow](#application-workflow)
+
+---
 
 ## Features
 
-- **Customer Management**: Store and manage customer details including contact information and service history
-- **Vehicle Tracking**: Maintain detailed records of customer vehicles with specifications
-- **Service Requests**: Create and track service requests with priority levels and status updates
-- **Job Management**: Monitor service jobs with labor charges and completion tracking
-- **Inventory Control**: Manage parts inventory with automatic reorder alerts and stock levels
-- **Billing System**: Generate invoices with labor and parts costs, including tax calculations
-- **User Authentication**: Secure JWT-based login and signup functionality
-- **Responsive UI**: Modern, mobile-friendly interface built with React
+| Module                  | Description                                                                            |
+| ----------------------- | -------------------------------------------------------------------------------------- |
+| **Customer Management** | Store and manage customer details, contact information, and service history            |
+| **Vehicle Tracking**    | Maintain detailed records of customer vehicles with specifications                     |
+| **Service Requests**    | Create and track service requests with priority levels and status updates              |
+| **Job Management**      | Monitor service jobs with labor charges, employee assignments, and completion tracking |
+| **Inventory Control**   | Manage parts inventory with automatic reorder alerts and stock levels                  |
+| **Billing System**      | Generate invoices with labor and parts costs, including 18% GST tax calculations       |
+| **Employee Management** | Track employees, their roles, ratings, and job assignments                             |
+| **Dashboard Analytics** | Real-time statistics for revenue, active jobs, customers, and low stock alerts         |
+| **Authentication**      | Secure JWT-based login and signup functionality                                        |
+
+---
 
 ## Tech Stack
 
@@ -27,27 +47,117 @@ AutoIMS is a comprehensive web-based application designed for managing vehicle s
 
 - **Python 3.8+** - Programming language
 - **Flask 3.0** - Web framework
-- **Flask-SQLAlchemy** - ORM integration
-- **psycopg3** - PostgreSQL adapter
+- **psycopg3** - PostgreSQL adapter (RAW SQL - no ORM)
 - **PyJWT** - JSON Web Token authentication
 - **Flask-CORS** - Cross-Origin Resource Sharing
+- **Werkzeug** - Password hashing
 
 ### Database
 
-- **PostgreSQL** - Relational database
-- **Schema**: Vehicle service management with customers, vehicles, services, inventory, and billing
+- **PostgreSQL 13+** - Relational database
+- **Schema**: `vehicle_service`
 
-## Prerequisites
+---
 
-Before running this application, make sure you have the following installed:
+## Project Structure
 
-- **Node.js** (v18 or higher)
-- **npm** (v9 or higher)
-- **Python** (v3.8 or higher)
-- **PostgreSQL** (v13 or higher)
-- **Git** - version control
+```
+AutoIMS/
+├── backend/                    # Python Flask REST API
+│   ├── app.py                  # Application entry point
+│   ├── config.py               # Database & JWT configuration
+│   ├── db_password.txt         # PostgreSQL password (gitignored)
+│   ├── requirements.txt        # Python dependencies
+│   ├── controllers/            # Business logic layer
+│   │   ├── billing.py          # Bill generation, payment processing
+│   │   ├── customers.py        # Customer CRUD operations
+│   │   ├── employees.py        # Employee management
+│   │   ├── inventory.py        # Stock management
+│   │   ├── job_parts.py        # Parts used in jobs
+│   │   ├── service_jobs.py     # Job tracking
+│   │   ├── service_requests.py # Service request handling
+│   │   └── vehicles.py         # Vehicle management
+│   ├── db/                     # Database utilities
+│   │   └── connection.py       # psycopg3 connection manager
+│   ├── models/                 # Data models
+│   │   └── user.py             # User authentication model
+│   ├── routes/                 # API endpoint handlers
+│   │   ├── auth.py             # Login/Signup endpoints
+│   │   ├── billing.py          # Billing API
+│   │   ├── customers.py        # Customers API
+│   │   ├── dashboard.py        # Dashboard stats API
+│   │   ├── employees.py        # Employees API
+│   │   ├── inventory.py        # Inventory API
+│   │   ├── job_parts.py        # Job parts API
+│   │   ├── service_jobs.py     # Service jobs API
+│   │   ├── service_requests.py # Service requests API
+│   │   └── vehicles.py         # Vehicles API
+│   └── utils/
+│       └── jwt_utils.py        # JWT token utilities
+├── database/
+│   └── schema.sql              # PostgreSQL schema definition
+├── frontend/                   # React application
+│   ├── package.json            # Node.js dependencies
+│   ├── vite.config.js          # Vite configuration
+│   ├── index.html              # HTML entry point
+│   ├── public/                 # Static assets (logo)
+│   └── src/
+│       ├── App.jsx             # Main app with routing
+│       ├── main.jsx            # React entry point
+│       ├── index.css           # Global styles (Tailwind)
+│       └── components/
+│           ├── Dashboard.jsx   # Main dashboard with stats
+│           ├── Login.jsx       # Login page
+│           ├── Signup.jsx      # Registration page
+│           ├── Navbar.jsx      # Top navigation
+│           ├── Sidebar.jsx     # Side navigation
+│           ├── Billing.jsx     # Billing management
+│           ├── Employee.jsx    # Employee management
+│           ├── Inventory.jsx   # Inventory management
+│           ├── Service_request.jsx # Service requests
+│           ├── Home.jsx        # Landing page
+│           └── Footer.jsx      # Footer component
+└── README.md                   # This file
+```
+
+---
+
+## Database Schema
+
+### Tables Overview
+
+| Table              | Purpose                 | Primary Key   |
+| ------------------ | ----------------------- | ------------- |
+| `customers`        | Customer information    | `customer_id` |
+| `vehicles`         | Customer vehicles       | `vehicle_id`  |
+| `employees`        | Staff members           | `id`          |
+| `service_requests` | Service request records | `request_id`  |
+| `service_jobs`     | Job tracking            | `job_id`      |
+| `inventory`        | Spare parts stock       | `part_id`     |
+| `job_parts_used`   | Parts used in jobs      | `job_part_id` |
+| `billing`          | Invoice records         | `bill_id`     |
+
+### Entity Relationships
+
+```
+customers (1) ──────< (N) vehicles
+vehicles (1) ──────< (N) service_requests
+service_requests (1) ──────< (N) service_jobs
+service_jobs (1) ──────< (N) job_parts_used
+inventory (1) ──────< (N) job_parts_used
+service_jobs (1) ──────── (1) billing
+employees (1) ──────< (N) service_jobs
+```
+
+---
 
 ## Installation
+
+### Prerequisites
+
+- Node.js v18+
+- Python 3.8+
+- PostgreSQL 13+
 
 ### 1. Clone the Repository
 
@@ -58,146 +168,217 @@ cd AutoIMS
 
 ### 2. Database Setup
 
-1. Install PostgreSQL on your system
-2. Create a new database:
-   ```bash
-   psql -U postgres
-   CREATE DATABASE vehicle_service_db;
-   \q
-   ```
-3. Run the schema file to set up tables:
-   ```bash
-   psql -U postgres -d vehicle_service_db -f database/schema.sql
-   ```
+```bash
+# Create database
+psql -U postgres
+CREATE DATABASE vehicle_service_db;
+\q
+
+# Run schema
+psql -U postgres -d vehicle_service_db -f database/schema.sql
+```
 
 ### 3. Backend Setup
 
-1. Navigate to the backend directory:
+```bash
+cd backend
 
-   ```bash
-   cd backend
-   ```
+# Create virtual environment
+python -m venv venv
+venv\Scripts\activate  # Windows
+# source venv/bin/activate  # Linux/Mac
 
-2. Create and activate a virtual environment:
+# Install dependencies
+pip install -r requirements.txt
 
-   ```bash
-   # Windows
-   python -m venv venv
-   venv\Scripts\activate
+# Configure database password
+echo "your_postgres_password" > db_password.txt
 
-   # Linux/macOS
-   python3 -m venv venv
-   source venv/bin/activate
-   ```
+# Start server
+python app.py
+```
 
-3. Install Python dependencies:
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. Configure database password:
-   - Edit `db_password.txt` with your PostgreSQL password
-   - Or set environment variable: `DATABASE_URL`
-
-5. Start the backend server:
-   ```bash
-   python app.py
-   ```
-
-The backend API will be available at `http://localhost:5000`
+Backend runs at: `http://localhost:5000`
 
 ### 4. Frontend Setup
 
-1. Navigate to the frontend directory:
+```bash
+cd frontend
 
-   ```bash
-   cd frontend
-   ```
+# Install dependencies
+npm install
 
-2. Install dependencies:
+# Start development server
+npm run dev
+```
 
-   ```bash
-   npm install
-   ```
+Frontend runs at: `http://localhost:5173`
 
-3. Start the development server:
-   ```bash
-   npm run dev
-   ```
-
-The frontend will be available at `http://localhost:5173`
+---
 
 ## Usage
 
-1. **Access the Application**: Open your browser and navigate to `http://localhost:5173`
-2. **Sign Up/Login**: Create an account or log in with existing credentials
-3. **Dashboard**: View overview of service requests, inventory status, and recent activities
-4. **Manage Customers**: Add, view, and update customer information
-5. **Vehicle Management**: Register and track customer vehicles
-6. **Service Operations**: Create service requests, assign jobs, and track progress
-7. **Inventory**: Monitor parts stock and manage reorder levels
-8. **Billing**: Generate and manage invoices for completed services
+1. **Sign Up**: Create an employee account
+2. **Login**: Authenticate with your credentials
+3. **Dashboard**: View real-time statistics
+4. **Service Requests**: Create requests for customer vehicles
+5. **Inventory**: Use parts for service jobs
+6. **Billing**: Generate and manage invoices
 
-## Project Structure
+---
 
-```
-AutoIMS/
-├── frontend/                  # React frontend application
-│   ├── src/
-│   │   ├── components/        # React components
-│   │   │   ├── Dashboard.jsx  # Main dashboard
-│   │   │   ├── Login.jsx      # Login page
-│   │   │   ├── Signup.jsx     # Registration page
-│   │   │   ├── Navbar.jsx     # Navigation bar
-│   │   │   ├── Sidebar.jsx    # Sidebar navigation
-│   │   │   └── ...
-│   │   ├── App.jsx            # Main application component
-│   │   ├── main.jsx           # Application entry point
-│   │   └── index.css          # Global styles
-│   ├── public/                # Static assets
-│   ├── package.json           # Frontend dependencies
-│   └── vite.config.js         # Vite configuration
-├── backend/                   # Python Flask backend
-│   ├── app.py                 # Application entry point
-│   ├── config.py              # Configuration settings
-│   ├── db.py                  # Database initialization
-│   ├── requirements.txt       # Python dependencies
-│   ├── models/                # SQLAlchemy models
-│   │   └── user.py            # User model
-│   ├── routes/                # API route handlers
-│   │   ├── auth.py            # Authentication routes
-│   │   └── dashboard.py       # Dashboard data routes
-│   └── utils/                 # Utility functions
-│       └── jwt_utils.py       # JWT token utilities
-├── database/                  # Database schema and migrations
-│   └── schema.sql             # PostgreSQL database schema
-└── README.md                  # Project documentation
-```
-
-## API Endpoints
+## API Reference
 
 ### Authentication
 
-| Method | Endpoint      | Description           | Auth Required |
-| ------ | ------------- | --------------------- | ------------- |
-| POST   | `/api/signup` | Register a new user   | No            |
-| POST   | `/api/login`  | Authenticate user     | No            |
-| GET    | `/api/me`     | Get current user info | Yes (JWT)     |
+| Method | Endpoint      | Description            |
+| ------ | ------------- | ---------------------- |
+| POST   | `/api/signup` | Register new employee  |
+| POST   | `/api/login`  | Authenticate & get JWT |
+| GET    | `/api/me`     | Get current user info  |
 
-### Dashboard Data (JWT Protected)
+### Dashboard
 
-| Method | Endpoint                          | Description          |
-| ------ | --------------------------------- | -------------------- |
-| GET    | `/api/dashboard`                  | Dashboard statistics |
-| GET    | `/api/dashboard/customers`        | All customers        |
-| GET    | `/api/dashboard/vehicles`         | All vehicles         |
-| GET    | `/api/dashboard/service-requests` | Service requests     |
-| GET    | `/api/dashboard/service-jobs`     | Service jobs         |
-| GET    | `/api/dashboard/inventory`        | Inventory items      |
-| GET    | `/api/dashboard/billing`          | Billing records      |
+| Method | Endpoint         | Description              |
+| ------ | ---------------- | ------------------------ |
+| GET    | `/api/dashboard` | Get dashboard statistics |
 
-### Health Check
+### Service Requests
+
+| Method | Endpoint                    | Description        |
+| ------ | --------------------------- | ------------------ |
+| GET    | `/api/service-requests`     | List all requests  |
+| POST   | `/api/service-requests`     | Create new request |
+| PUT    | `/api/service-requests/:id` | Update request     |
+| DELETE | `/api/service-requests/:id` | Delete request     |
+
+### Inventory
+
+| Method | Endpoint             | Description    |
+| ------ | -------------------- | -------------- |
+| GET    | `/api/inventory`     | List all parts |
+| POST   | `/api/inventory`     | Add new part   |
+| PUT    | `/api/inventory/:id` | Update part    |
+| DELETE | `/api/inventory/:id` | Delete part    |
+
+### Billing
+
+| Method | Endpoint                        | Description           |
+| ------ | ------------------------------- | --------------------- |
+| GET    | `/api/billing`                  | List all bills        |
+| POST   | `/api/billing/generate/:job_id` | Generate bill for job |
+| PUT    | `/api/billing/:id/pay`          | Mark bill as paid     |
+
+### Employees
+
+| Method | Endpoint             | Description        |
+| ------ | -------------------- | ------------------ |
+| GET    | `/api/employees`     | List all employees |
+| POST   | `/api/employees`     | Add new employee   |
+| PUT    | `/api/employees/:id` | Update employee    |
+| DELETE | `/api/employees/:id` | Delete employee    |
+
+---
+
+## Application Workflow
+
+### Complete Service Flow
+
+```
+1. CUSTOMER ARRIVES
+   └── Customer brings vehicle for service
+
+2. SERVICE REQUEST CREATED
+   ├── Frontend: Service_request.jsx → handleAddRequest()
+   ├── Backend: POST /api/service-requests
+   ├── Controller: service_requests.create_request()
+   ├── SQL: INSERT INTO vehicle_service.service_requests
+   └── TRIGGER: Auto-creates service_job with assigned employee
+
+3. PARTS USED FROM INVENTORY
+   ├── Frontend: Inventory.jsx → handlePopupSubmit()
+   ├── Backend: POST /api/job-parts/use-for-vehicle
+   ├── Controller: job_parts.add_part_to_job()
+   ├── SQL: INSERT INTO vehicle_service.job_parts_used
+   └── SQL: UPDATE vehicle_service.inventory (reduce stock)
+
+4. JOB COMPLETED
+   ├── Frontend: Update job status to "Completed"
+   ├── Backend: PUT /api/service-jobs/:id
+   └── SQL: UPDATE vehicle_service.service_jobs SET job_status='Completed'
+
+5. BILL GENERATED
+   ├── Frontend: Billing.jsx → handleCreateInvoice()
+   ├── Backend: POST /api/billing/generate/:job_id
+   ├── Controller: billing.generate_bill()
+   ├── SQL: Calculate labor + parts + 18% GST
+   └── SQL: INSERT INTO vehicle_service.billing
+
+6. PAYMENT RECEIVED
+   ├── Frontend: Billing.jsx → handleMarkAsPaid()
+   ├── Backend: PUT /api/billing/:id/pay
+   ├── SQL: UPDATE vehicle_service.billing SET payment_status='Paid', payment_date=CURRENT_TIMESTAMP
+   └── Dashboard: Total Revenue updates
+```
+
+### Dashboard Data Flow
+
+```
+Dashboard.jsx
+    │
+    ├── useEffect() → fetchDashboard()
+    │
+    ├── GET /api/dashboard (with JWT token)
+    │
+    ├── Backend: routes/dashboard.py → get_dashboard()
+    │       │
+    │       └── get_dashboard_stats()
+    │           ├── SELECT COUNT(*) FROM vehicle_service.customers
+    │           ├── SELECT COUNT(*) FROM vehicle_service.vehicles
+    │           ├── SELECT COUNT(*) FROM vehicle_service.service_jobs WHERE job_status IN ('Pending', 'In Progress')
+    │           ├── SELECT COALESCE(SUM(total_amount), 0) FROM vehicle_service.billing WHERE payment_status='Paid'
+    │           ├── SELECT COALESCE(SUM(total_amount), 0) FROM vehicle_service.billing WHERE payment_status='Unpaid'
+    │           └── SELECT TOP 3 employees by rating
+    │
+    └── setStats(response.stats) → UI updates
+```
+
+### Authentication Flow
+
+```
+1. User submits login form
+2. POST /api/login with {username, password}
+3. Backend validates credentials against vehicle_service.employees
+4. If valid: Generate JWT token with employee_id
+5. Return token to frontend
+6. Frontend stores token in localStorage
+7. All subsequent API calls include: Authorization: Bearer <token>
+8. @token_required decorator validates token on protected routes
+```
+
+---
+
+## Environment Variables
+
+| Variable         | Description            | Default            |
+| ---------------- | ---------------------- | ------------------ |
+| `DB_HOST`        | PostgreSQL host        | localhost          |
+| `DB_PORT`        | PostgreSQL port        | 5432               |
+| `DB_NAME`        | Database name          | vehicle_service_db |
+| `DB_USER`        | Database user          | postgres           |
+| `JWT_SECRET_KEY` | Secret for JWT signing | (in config.py)     |
+
+---
+
+## License
+
+This project is for educational purposes.
+
+---
+
+## Contributors
+
+- AutoIMS Development Team
 
 | Method | Endpoint      | Description       |
 | ------ | ------------- | ----------------- |
