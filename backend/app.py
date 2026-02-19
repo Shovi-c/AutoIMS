@@ -11,6 +11,7 @@ from routes.billing import billing_bp
 from routes.customers import customers_bp
 from routes.vehicles import vehicles_bp
 from routes.service_requests import service_requests_bp
+from seed_inventory import seed_inventory
 
 
 def create_app(config_class=Config):
@@ -158,5 +159,8 @@ if __name__ == '__main__':
     print("Utility:")
     print("  GET  /api/health  - Health check")
     print("=" * 60)
+    
+    # Seed inventory data if empty
+    seed_inventory()
     
     app.run(debug=True, host='0.0.0.0', port=5000)
