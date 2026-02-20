@@ -254,13 +254,15 @@ const Inventory = () => {
     const quantity_in_stock = form.Quantity.value.trim();
     const quantity_label = form.quantitylabel.value.trim();
     const description = form.description.value.trim();
+    const image = form.ItemImage.files[0];
     if (
       !part_name ||
       !part_code ||
       !brand ||
       !unit_price ||
       !quantity_in_stock ||
-      !quantity_label
+      !quantity_label ||
+      !image
     )
       return;
 
@@ -282,6 +284,7 @@ const Inventory = () => {
             quantity_in_stock: parseInt(quantity_in_stock),
             quantity_label,
             description,
+            image_url: editItemData.image_url, // Keep existing image URL if not changed
           }),
         },
       );
@@ -762,6 +765,25 @@ const Inventory = () => {
                     }
                     required
                     className="p-2 border border-gray-300 rounded-xl"
+                  />
+                </div>
+              </div>
+                 <div className="flex space-x-4 flex-wrap w-full">
+                <div className="flex flex-col items-start space-y-2 flex-1 min-w-0">
+                  <label htmlFor="ItemImage" className="font-medium">
+                    Item Image <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="file"
+                    id="ItemImage"
+                    accept="image/*"
+                    onChange={(e) =>
+                      setEditItemData({
+                        ...editItemData,
+                        image_url: e.target.files[0],
+                      })
+                    }
+                    required
                   />
                 </div>
               </div>
