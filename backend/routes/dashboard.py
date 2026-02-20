@@ -204,7 +204,7 @@ def get_dashboard_stats():
             print(f"[DEBUG] pending_requests = {pending_requests}")
             
             # Count active service jobs (Pending OR In Progress)
-            cur.execute("SELECT COUNT(*) as count FROM vehicle_service.service_jobs WHERE job_status IN ('Pending', 'In Progress')")
+            cur.execute("SELECT COUNT(*) as count FROM vehicle_service.service_jobs WHERE job_status IN ('Pending', 'In_Progress')")
             active_jobs = cur.fetchone()['count'] or 0
             print(f"[DEBUG] active_jobs = {active_jobs}")
             
