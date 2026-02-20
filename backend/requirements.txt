@@ -19,3 +19,5 @@ Flask-CORS==4.0.0               # Cross-Origin Resource Sharing support
 
 # --- Utilities ---
 python-dotenv==1.0.0            # Load environment variables from .env file
+
+gunicorn==20.1.0              # WSGI HTTP server for production deployment
