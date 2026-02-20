@@ -20,6 +20,7 @@ def get_connection():
         dbname=Config.DB_NAME,
         user=Config.DB_USER,
         password=Config.DB_PASSWORD,
+        sslmode='require',
         options='-c search_path=vehicle_service'
     )
     return conn
