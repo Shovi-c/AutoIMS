@@ -22,4 +22,6 @@ python-dotenv==1.0.0            # Load environment variables from .env file
 
 gunicorn==20.1.0              # WSGI HTTP server for production deployment
 
-setuptools>=68.0.0            # Required for packaging and distribution
+setuptools==69.5.1           # Required for packaging and distribution
+
+wheel==0.42.0               # Build wheel packages for distribution
