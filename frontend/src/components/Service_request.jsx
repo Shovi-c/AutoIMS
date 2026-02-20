@@ -760,7 +760,7 @@ const Service_request = () => {
                 <label className="mb-1 font-medium block text-sm">Status</label>
                 <select
                   name="status"
-                  value={editRequestData.status || "Pending"}
+                  value={editRequestData.status || "Pending" || "in_progress"}
                   onChange={handleEditRequestChange}
                   className="p-2 border border-gray-300 rounded-lg w-full focus:border-indigo-400 focus:outline-none"
                 >
