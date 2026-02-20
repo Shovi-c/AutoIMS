@@ -615,12 +615,13 @@ const Employee = () => {
             <div className="flex flex-col sm:flex-row gap-4 w-full">
               <div className="flex-1">
                 <label className="mb-1 font-medium block">
-                  Vehicle IDs (comma separated)
+                  Vehicle IDs
                 </label>
                 <input
                   name="vehicleId"
                   type="number"
                   min={1}
+                  placeholder="1,2"
 
                   value={newEmployee.vehicleId}
                   onChange={handleNewEmployeeChange}
@@ -707,6 +708,7 @@ const Employee = () => {
                   type="tel"
                   pattern="[0-9]{10}"
                   inputMode="numeric"
+                  placeholder="1234567890"
                   maxLength={10}
                   minLength={10}
                   value={editEmployeeData.phone || ""}
@@ -763,12 +765,13 @@ const Employee = () => {
             <div className="flex flex-col sm:flex-row gap-4 w-full">
               <div className="flex-1">
                 <label className="mb-1 font-medium block">
-                  Vehicle IDs (comma separated)
+                  Vehicle IDs
                 </label>
                 <input
                   name="vehicleId"
                   type="number"
                   min={1}
+                  placeholder="1,2"
                   value={editEmployeeData.vehicleId || ""}
                   onChange={handleEditEmployeeChange}
                   className="p-2 border border-gray-300 rounded-xl w-full"
