@@ -1,4 +1,4 @@
--- 1. Kill the old tables in PUBLIC so they stop distracting us
+-- 1. Kill the old tables in PUBLIC 
 DROP TABLE IF EXISTS public.users, public.employees, public.customers, public.vehicles, 
 public.service_requests, public.service_jobs, public.inventory, 
 public.job_parts_used, public.billing CASCADE;
@@ -8,7 +8,7 @@ DROP SCHEMA IF EXISTS vehicle_service CASCADE;
 CREATE SCHEMA vehicle_service;
 
 
--- 4. Create the employees table in the schema
+-- 3. EMPLOYEES
 CREATE TABLE vehicle_service.employees (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -24,7 +24,7 @@ CREATE TABLE vehicle_service.employees (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 5. CUSTOMER
+-- 4. CUSTOMERS
 CREATE TABLE vehicle_service.customers(
     customer_id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -34,7 +34,7 @@ CREATE TABLE vehicle_service.customers(
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 6. VEHICLE
+-- 5. VEHICLES
 CREATE TABLE vehicle_service.vehicles(
     vehicle_id SERIAL PRIMARY KEY,
     plate_no VARCHAR(20) UNIQUE NOT NULL,
@@ -45,7 +45,7 @@ CREATE TABLE vehicle_service.vehicles(
     customer_id INT REFERENCES vehicle_service.customers(customer_id)
 );
 
--- 7. SERVICE REQUEST
+-- 6. SERVICE REQUEST
 CREATE TABLE vehicle_service.service_requests(
     request_id SERIAL PRIMARY KEY,
     request_date DATE NOT NULL DEFAULT CURRENT_DATE,
@@ -56,7 +56,7 @@ CREATE TABLE vehicle_service.service_requests(
     vehicle_id INT REFERENCES vehicle_service.vehicles(vehicle_id)
 );
 
--- 8. SERVICE JOB
+-- 7. SERVICE JOB
 CREATE TABLE vehicle_service.service_jobs(
     job_id SERIAL PRIMARY KEY,
     start_time TIMESTAMP,
@@ -67,7 +67,7 @@ CREATE TABLE vehicle_service.service_jobs(
     employee_id INT REFERENCES vehicle_service.employees(id)
 );
 
--- 9. INVENTORY
+-- 8. INVENTORY
 CREATE TABLE vehicle_service.inventory(
     part_id SERIAL PRIMARY KEY,
     part_name VARCHAR(100) NOT NULL,
@@ -81,7 +81,7 @@ CREATE TABLE vehicle_service.inventory(
 );
 
 
--- 10. JOB PARTS USED
+-- 9. JOB PARTS USED
 CREATE TABLE vehicle_service.job_parts_used(
     job_part_id SERIAL PRIMARY KEY,
     quantity_used INT NOT NULL,
@@ -90,7 +90,7 @@ CREATE TABLE vehicle_service.job_parts_used(
     part_id INT REFERENCES vehicle_service.inventory(part_id)
 );
 
--- 11. BILLING
+-- 10. BILLING
 CREATE TABLE vehicle_service.billing(
     bill_id SERIAL PRIMARY KEY,
     bill_date DATE NOT NULL DEFAULT CURRENT_DATE,
@@ -107,8 +107,6 @@ ALTER TABLE vehicle_service.billing
 ADD COLUMN IF NOT EXISTS payment_date TIMESTAMP;
 
 -- Ensure the revenue calculation works by having the right statuses
--- (This ensures the dashboard can sum up 'Paid' bills)
-
 
 ALTER TABLE vehicle_service.inventory 
 ADD COLUMN IF NOT EXISTS image_url TEXT,
