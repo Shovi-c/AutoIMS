@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-const API_BASE_URL = "http://localhost:5000";
+const API_BASE_URL = "http://localhost:5000" || "https://autoims-ot8v.onrender.com"; // Update with your backend URL
 
 const Inventory = () => {
   const navigate = useNavigate();

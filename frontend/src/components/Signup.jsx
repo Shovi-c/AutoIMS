@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-const API_BASE = "http://localhost:5000/api";
+const API_BASE = "http://localhost:5000/api" || "https://autoims-ot8v.onrender.com/api"; // Update with your backend URL
 
 const Signup = () => {
   const [name, setName] = useState("");
